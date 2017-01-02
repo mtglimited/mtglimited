@@ -3,7 +3,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import UniversalLayout from 'components/UniversalLayout';
 
 const propTypes = {
-  children: PropTypes.element.isRequired,
+  children: PropTypes.element,
 };
 
 const App = ({ children }) => (
