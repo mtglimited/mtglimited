@@ -4,8 +4,8 @@ import { Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import routes from 'routes';
-import DevTools from 'containers/DevTools';
-import createStore from 'state';
+import DevTools from 'Containers/DevTools';
+import createStore from 'State';
 
 const store = createStore();
 const history = syncHistoryWithStore(browserHistory, store);

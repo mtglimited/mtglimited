@@ -3,6 +3,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   devtool: 'eval-source-map',
@@ -27,6 +28,9 @@ module.exports = {
       inject: 'body',
       filename: 'index.html'
     }),
+    new CopyWebpackPlugin([
+      { from: 'app/assets', to: 'assets' },
+    ]),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),

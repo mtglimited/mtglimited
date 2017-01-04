@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react';
+import { Link } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
@@ -29,7 +30,7 @@ class UniversalLayout extends Component {
     );
 
     return (
-      <div>
+      <div style={styles}>
         <AppBar
           title="MTGLIMITED"
           iconElementLeft={menuButton}
@@ -41,7 +42,9 @@ class UniversalLayout extends Component {
           onRequestChange={isDrawerOpen => this.setState({ isDrawerOpen })}
         >
           <h3 style={styles.drawer.header}>Navigation</h3>
-          <MenuItem onTouchTap={this.closeDrawer}>Draft</MenuItem>
+          <Link to="draft">
+            <MenuItem onTouchTap={this.closeDrawer}>Draft</MenuItem>
+          </Link>
         </Drawer>
         {this.props.children}
       </div>

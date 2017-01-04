@@ -4,7 +4,7 @@ import { AppContainer } from 'react-hot-loader';
 // http://www.material-ui.com/#/get-started/installation --- Remove when react has this natively
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import Root from 'containers/Root';
+import Root from 'Containers/Root';
 
 injectTapEventPlugin();
 
@@ -18,8 +18,8 @@ render(
 );
 
 if (module.hot) {
-  module.hot.accept('./containers/Root', () => {
-    const NewRoot = require('./containers/Root').default;
+  module.hot.accept('./Containers/Root', () => {
+    const NewRoot = require('./Containers/Root').default;
 
     render(
       <AppContainer>
