@@ -32,10 +32,6 @@
     "jsx": true
   },
   "extends": "airbnb",
-  "rules": {
-    "import/no-extraneous-dependencies": [0], // for unit testing only, will turn off when https://github.com/eslint/eslint/issues/3611 is closed
-    "global-require": [0] // for unit testing only, will turn off when https://github.com/eslint/eslint/issues/3611 is closed
-  },
   "plugins": [
     "import",
     "react"
