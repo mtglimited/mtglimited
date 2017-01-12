@@ -34,12 +34,6 @@
   "extends": "airbnb",
   "rules": {
     "indent": [2, 2, { "SwitchCase": 1 }],
-    "react/jsx-sort-props": ["off", {
-      "ignoreCase": true,
-      "callbacksLast": false,
-      "shorthandFirst": false,
-      "shorthandLast": false,
-    }],
     "react/no-unused-prop-types": ["off"],
     "import/no-extraneous-dependencies": ["off"], // for unit testing only, will turn off when https://github.com/eslint/eslint/issues/3611 is closed
     "global-require": ["off"] // for unit testing only, will turn off when https://github.com/eslint/eslint/issues/3611 is closed
