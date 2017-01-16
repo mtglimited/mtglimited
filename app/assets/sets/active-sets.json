@@ -3,6 +3,10 @@
     {
       "abbr": "KLD",
       "name": "Kaladesh"
+    },
+    {
+      "abbr": "AER",
+      "name": "Aether Revolt"
     }
   ]
 }

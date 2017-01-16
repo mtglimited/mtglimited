@@ -5,7 +5,9 @@ import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
-import styles from './UniversalLayout.styles';
+// TODO
+/* eslint-disable import/no-unresolved */
+import style from './UniversalLayout.style';
 
 const propTypes = {
   children: PropTypes.element,
@@ -30,7 +32,7 @@ class UniversalLayout extends Component {
     );
 
     return (
-      <div style={styles}>
+      <div style={style}>
         <AppBar
           title="MTGLIMITED"
           iconElementLeft={menuButton}
@@ -41,8 +43,8 @@ class UniversalLayout extends Component {
           open={this.state.isDrawerOpen}
           onRequestChange={isDrawerOpen => this.setState({ isDrawerOpen })}
         >
-          <h3 style={styles.drawer.header}>Navigation</h3>
-          <Link to="draft">
+          <h3 style={style.drawer.header}>Navigation</h3>
+          <Link to="/draft">
             <MenuItem onTouchTap={this.closeDrawer}>Draft</MenuItem>
           </Link>
         </Drawer>

@@ -1,50 +1,74 @@
 import { createReducer, createActions } from 'reduxsauce';
-// import fetch from 'isomorphic-fetch';
+import axios from 'axios';
 
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
   getSetsRequest: [],
-  getSetsSuccess: ['sets'],
-  getSetsFailure: ['error'],
+  getSetsSuccess: ['availableSets'],
+  getSetRequest: ['set'],
+  getSetSuccess: ['data'],
 });
 
 export const SetTypes = Types;
 export default Creators;
 
+export const fetchSets = () => (dispatch) => {
+  dispatch(Creators.getSetsRequest());
+  return axios('/assets/sets/active-sets.json')
+    .then(json => dispatch(Creators.getSetsSuccess(json.data.sets)));
+};
+
+export const fetchSet = set => (dispatch) => {
+  dispatch(Creators.getSetRequest(set));
+  return axios(`/assets/sets/${set}.json`)
+    .then(json => dispatch(Creators.getSetSuccess(json.data)));
+};
+
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = {
-  data: [],
+  availableSets: [],
   error: null,
   fetching: false,
 };
 
 /* ------------- Reducers ------------- */
 
-export const request = (state: Object) => ({
+export const setsRequest = state => ({
   ...state,
   fetching: true,
 });
 
-export const success = (state: Object, { data }: Array) => ({
+export const setsSuccess = (state: Object, { availableSets }: Array) => ({
   ...state,
   fetching: false,
   error: null,
-  data,
+  availableSets,
 });
 
-export const failure = (state: Object, { error }: Object) => ({
+export const setRequest = (state: Object, data: Object) => ({
+  ...state,
+  [data.set]: {
+    fetching: true,
+  },
+});
+
+export const setSuccess = (state: Object, { data }: Object) => ({
   ...state,
   fetching: false,
-  error,
-  data: [],
+  error: null,
+  [data.code]: {
+    ...data,
+    fetching: false,
+  },
 });
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-  [Types.GET_SETS_REQUEST]: request,
-  [Types.GET_SETS_SUCCESS]: success,
-  [Types.GET_SETS_FAILURE]: failure,
+  [Types.GET_SETS_REQUEST]: setsRequest,
+  [Types.GET_SETS_SUCCESS]: setsSuccess,
+  [Types.GET_SET_REQUEST]: setRequest,
+  [Types.GET_SET_SUCCESS]: setSuccess,
 });

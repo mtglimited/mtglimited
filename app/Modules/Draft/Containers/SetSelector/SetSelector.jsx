@@ -1,33 +1,37 @@
 import React, { PropTypes, Component } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
-import SetActions from 'State/SetsRedux';
-import CircularProgress from 'material-ui/CircularProgress';
+import { fetchSets } from 'State/SetsRedux';
+import { List, ListItem } from 'material-ui/List';
 
 const propTypes = {
-  setList: PropTypes.array.isRequired,
-  fetching: PropTypes.bool.isRequired,
-  getSetsRequest: PropTypes.func.isRequired,
+  availableSets: PropTypes.array.isRequired,
+  fetchSets: PropTypes.func.isRequired,
+};
+
+const style = {
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
 };
 
 class SetSelector extends Component {
   componentDidMount() {
-    this.props.getSetsRequest();
+    this.props.fetchSets();
   }
 
   render() {
     return (
-      <div>
+      <div style={style}>
         <h3>Select a Set</h3>
-        {this.props.fetching &&
-          <CircularProgress size={80} thickness={5} />
-        }
-        {this.props.setList.length &&
-          <ul>
-            {this.props.setList.map(set => (
-              <li><Link to={`/draft/${set}`}>{set}</Link></li>
+        {this.props.availableSets.length &&
+          <List>
+            {this.props.availableSets.map(set => (
+              <Link to={`/draft/${set.abbr}`} key={set.abbr}>
+                <ListItem>{set.name}</ListItem>
+              </Link>
             ))}
-          </ul>
+          </List>
         }
       </div>
     );
@@ -37,12 +41,11 @@ class SetSelector extends Component {
 SetSelector.propTypes = propTypes;
 
 const mapStateToProps = state => ({
-  setList: state.sets.list,
-  fetching: state.users.fetching,
+  availableSets: state.sets.availableSets,
 });
 
 const mapDispatchToProps = dispatch => ({
-  getSetsRequest: () => dispatch(SetActions.getSetsRequest()),
+  fetchSets: () => dispatch(fetchSets()),
 });
 
 export default connect(
