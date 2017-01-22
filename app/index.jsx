@@ -19,6 +19,7 @@ render(
 
 if (module.hot) {
   module.hot.accept('./Containers/Root', () => {
+    /* eslint-disable global-require */
     const NewRoot = require('./Containers/Root').default;
 
     render(
