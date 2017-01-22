@@ -2,12 +2,12 @@ import { combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
 import configureStore from './CreateStore';
 
-/* eslint-disable global-require */
 export default () => {
+  /* eslint-disable global-require */
   const rootReducer = combineReducers({
     routing,
     sets: require('./SetsRedux').reducer,
-    draft: require('./DraftRedux').reducer,
+    players: require('./PlayersRedux').reducer,
   });
 
   return configureStore(rootReducer);

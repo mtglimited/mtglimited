@@ -6,7 +6,7 @@ const propTypes = {
   pickCard: PropTypes.func.isRequired,
   booster: PropTypes.shape({
     set: PropTypes.string,
-    cards: PropTypes.array,
+    cards: PropTypes.array.isRequired,
   }),
 };
 
@@ -16,17 +16,21 @@ const propTypes = {
 class Booster extends Component {
   render() {
     const { booster, pickCard } = this.props;
+
+    /* eslint-disable arrow-body-style */
     return (
       <div style={style.booster}>
-        {booster && booster.cards.map((card, key) => (
-          <img
-            style={style.card}
-            src={`http://mtglimited.io/assets/img/cards/${booster.set}/${card.imageName}.jpeg`}
-            key={key}
-            role="presentation"
-            onTouchTap={() => pickCard(key, 0)}
-          />
-        ))}
+        {booster.cards.map((card, key) => {
+          return card.isPicked
+            ? null
+            : <img
+              style={style.card}
+              src={`http://mtglimited.io/assets/img/cards/${booster.set}/${card.imageName}.jpeg`}
+              key={key}
+              role="presentation"
+              onTouchTap={() => pickCard(key, 0)}
+            />;
+        })}
       </div>
     );
   }

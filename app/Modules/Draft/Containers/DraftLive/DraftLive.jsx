@@ -1,26 +1,26 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
-import DraftActions, { initializeDraft } from 'State/DraftRedux';
+import DraftActions, { initializePlayers } from 'State/PlayersRedux';
 import Booster from 'Modules/Draft/Components/Booster';
 import style from './DraftLive.style';
 
 const propTypes = {
-  initializeDraft: PropTypes.func.isRequired,
+  initializePlayers: PropTypes.func.isRequired,
   params: PropTypes.shape({
     activeSet: PropTypes.string,
   }),
-  draft: PropTypes.shape(),
+  players: PropTypes.array.isRequired,
   pickCard: PropTypes.func.isRequired,
 };
 
 class DraftLive extends Component {
   componentDidMount() {
     const { activeSet } = this.props.params;
-    this.props.initializeDraft(activeSet);
+    this.props.initializePlayers(activeSet);
   }
 
   render() {
-    const { booster } = this.props.draft.players[0];
+    const { booster } = this.props.players[0];
     const { pickCard } = this.props;
 
     return (
@@ -35,13 +35,17 @@ class DraftLive extends Component {
 DraftLive.propTypes = propTypes;
 
 const mapStateToProps = state => ({
-  sets: state.sets,
-  draft: state.draft.toJS(),
+  sets: state.sets.toJS(),
+  players: state.players.toJS(),
 });
 
 const mapDispatchToProps = dispatch => ({
-  initializeDraft: set => dispatch(initializeDraft(set)),
-  pickCard: (cardIndex, playerIndex) => dispatch(DraftActions.pickCard(cardIndex, playerIndex)),
+  initializePlayers: set => dispatch(initializePlayers(set)),
+  pickCard: (cardIndex, playerIndex) => {
+    dispatch(DraftActions.pickCard(cardIndex, playerIndex));
+    // dispatch(DraftActions.pickAIPlayerCards());
+    // dispatch(DraftActions.passPacks());
+  },
 });
 
 export default connect(

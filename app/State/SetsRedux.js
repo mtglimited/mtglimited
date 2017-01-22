@@ -1,5 +1,6 @@
 import { createReducer, createActions } from 'reduxsauce';
 import axios from 'axios';
+import { List, Map } from 'immutable';
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -27,34 +28,34 @@ export const fetchSet = set => (dispatch) => {
 
 /* ------------- Initial State ------------- */
 
-export const INITIAL_STATE = {
-  availableSets: [],
+export const INITIAL_STATE = Map({
+  availableSets: List.of([]),
   error: null,
   fetching: false,
-};
+});
 
 /* ------------- Reducers ------------- */
 
-export const setsRequest = state => ({
+export const setsRequest = state => state.merge({
   ...state,
   fetching: true,
 });
 
-export const setsSuccess = (state: Object, { availableSets }: Array) => ({
+export const setsSuccess = (state: Object, { availableSets }: Array) => state.merge({
   ...state,
   fetching: false,
   error: null,
   availableSets,
 });
 
-export const setRequest = (state: Object, data: Object) => ({
+export const setRequest = (state: Object, data: Object) => state.merge({
   ...state,
   [data.set]: {
     fetching: true,
   },
 });
 
-export const setSuccess = (state: Object, { data }: Object) => ({
+export const setSuccess = (state: Object, { data }: Object) => state.merge({
   ...state,
   fetching: false,
   error: null,

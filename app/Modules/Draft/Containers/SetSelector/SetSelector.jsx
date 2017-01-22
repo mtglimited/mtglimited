@@ -21,13 +21,15 @@ class SetSelector extends Component {
   }
 
   render() {
+    const { availableSets } = this.props;
+
     return (
       <div style={style}>
         <h3>Select a Set</h3>
-        {this.props.availableSets.length &&
+        {availableSets.length &&
           <List>
-            {this.props.availableSets.map(set => (
-              <Link to={`/draft/${set.abbr}`} key={set.abbr}>
+            {availableSets.map(set => (
+              <Link to={`/draft/${set.abbr}`} key={set.abbr || 0}>
                 <ListItem>{set.name}</ListItem>
               </Link>
             ))}
@@ -41,7 +43,7 @@ class SetSelector extends Component {
 SetSelector.propTypes = propTypes;
 
 const mapStateToProps = state => ({
-  availableSets: state.sets.availableSets,
+  availableSets: state.sets.get('availableSets').toJS(),
 });
 
 const mapDispatchToProps = dispatch => ({
