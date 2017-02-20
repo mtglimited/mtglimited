@@ -2,6 +2,7 @@ import React from 'react';
 import * as Colyseus from 'colyseus.js';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import Booster from 'Modules/Draft/Components/Booster';
 
 const propTypes = {
   params: React.PropTypes.object,
@@ -13,18 +14,21 @@ class DraftRoom extends React.Component {
 
     this.client = new Colyseus.Client('ws://localhost:2657');
     this.room = this.client.join('draft');
+    this.state = this.room.state.data;
+    this.room.onUpdate.add(state => this.update(state));
 
     this.handleSubmitChat = this.handleSubmitChat.bind(this);
-    this.update = this.update.bind(this);
     this.startDraft = this.startDraft.bind(this);
-  }
-
-  componentDidMount() {
-    this.room.onUpdate.add(() => this.update());
+    this.pickCard = this.pickCard.bind(this);
+    this.update = this.update.bind(this);
   }
 
   componentWillUnmount() {
     this.client.leave();
+  }
+
+  update(state) {
+    this.setState(state);
   }
 
   addMessage(message) {
@@ -35,16 +39,27 @@ class DraftRoom extends React.Component {
     this.addMessage(this.chatTextInput.getValue());
   }
 
-  update() {
-    this.forceUpdate();
+  startDraft() {
+    this.client.send({
+      type: 'startDraft',
+    });
   }
 
-  startDraft() {
-    this.client.send({ isDraftStarted: true });
+  pickCard(card) {
+    console.log('picked ', card);
+    this.client.send({
+      type: 'pickCard',
+      id: this.client.id,
+      card,
+    });
   }
 
   render() {
-    const { messages, players, isDraftStarted } = this.room.state.data;
+    const { messages, players, isDraftStarted } = this.state;
+    let myPlayer;
+    if (players && players.length) {
+      myPlayer = players.find(player => player.id === this.client.id);
+    }
 
     return (
       <div>
@@ -60,10 +75,10 @@ class DraftRoom extends React.Component {
             </ul>
             {players &&
               <div>
-                <h2>Players ({Object.keys(players).length})</h2>
+                <h2>Players ({players.length})</h2>
                 <ul style={{ listStyle: 'none' }}>
-                  {Object.keys(players).map((player, index) => (
-                    <li key={index}>{player}</li>
+                  {players.map((player, index) => (
+                    <li key={index}>{player.id}</li>
                   ))}
                 </ul>
               </div>
@@ -78,7 +93,7 @@ class DraftRoom extends React.Component {
                 label="Submit"
                 onTouchTap={this.handleSubmitChat}
               />
-              {players && Object.keys(players).length > 1 &&
+              {players && players.length > 1 &&
                 <RaisedButton
                   label="Start Draft"
                   onTouchTap={this.startDraft}
@@ -88,7 +103,13 @@ class DraftRoom extends React.Component {
           </div>
         }
         {isDraftStarted &&
-          <h1>Live Draft</h1>
+          <div>
+            <h1>Live Draft</h1>
+            <Booster
+              booster={myPlayer.currentPack || []}
+              pickCard={this.pickCard}
+            />
+          </div>
         }
       </div>
     );

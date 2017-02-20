@@ -3,7 +3,6 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   devtool: 'eval-source-map',
@@ -28,9 +27,6 @@ module.exports = {
       inject: 'body',
       filename: 'index.html'
     }),
-    new CopyWebpackPlugin([
-      { from: 'app/assets', to: 'assets' },
-    ]),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
@@ -53,12 +49,6 @@ module.exports = {
       test: /\.(js|jsx)$/,
       exclude: /node_modules/,
       loader: 'babel-loader'
-    }, {
-      test: /\.scss$/,
-      loader: 'style!css!sass?modules&localIdentName=[name]---[local]---[hash:base64:5]'
-    }, {
-      test: /\.(png|jpg)$/,
-      loader: 'url-loader?limit=8192'
     }]
   },
   resolve: {
