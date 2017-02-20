@@ -3,15 +3,15 @@ import { List } from 'immutable';
 import _ from 'lodash';
 import { fetchSet } from './SetsRedux';
 import BoosterService from './Helpers/BoosterPack/BoosterService';
+import { PASS_DIRECTIONS } from './DraftRedux';
 
 const { Types, Creators } = createActions({
   setPlayers: ['players'],
   pickCard: ['cardIndex', 'playerIndex'],
   passPacks: ['direction'],
+  pickAiPlayerCards: [],
 });
-
-export const DIRECTION_LEFT = -1;
-export const DIRECTION_RIGHT = 1;
+/* eslint-disable */
 
 export const initializePlayers = activeSet => (dispatch) => {
   // Get the set to be drafted
@@ -32,6 +32,7 @@ export const initializePlayers = activeSet => (dispatch) => {
     }
 
     players[0].isAI = false; // user is not AI
+    debugger;
     dispatch(Creators.setPlayers(players));
   });
 };
@@ -53,41 +54,53 @@ export const INITIAL_PLAYERS_STATE = List.of(
 export const setPlayers = (state, { players }) => List.of(...players);
 
 const pickCard = (state, { cardIndex, playerIndex }) => {
-  const players = state.toJS();
-  const player = players[playerIndex];
+  debugger;
+  const player = state.get(playerIndex);
   const card = player.booster.cards[cardIndex];
   card.isPicked = true;
   player.collection.push(card);
   player.booster.cards.splice(cardIndex, 1, card);
 
-  return List.of(
-    ...players.slice(0, playerIndex),
+  const players = [
+    ...state.slice(0, playerIndex),
     player,
-    ...players.slice(playerIndex + 1),
-  );
+    ...state.slice(playerIndex + 1),
+  ];
+  return List.of(...players);
 };
 
 const passPacks = (state, { direction }) => {
-  const players = state.toJS();
-  const firstPlayerBooster = _.clone(players[0].booster);
-  const lastPlayerBooster = _.clone(players[players.length - 1].booster);
-  const directionPlusMinus = direction === 'left' ? -1 : 1;
+  let players = state;
+  const firstPlayerBooster = state.get(0).booster;
+  const lastPlayerBooster = players.get(players.size - 1).booster;
+
   players.forEach((player, index) => {
-    /* eslint-disable no-param-reassign */
-    player.booster = players[index + directionPlusMinus].booster;
+    const passTarget = index + direction;
+    if (passTarget > 0 && passTarget < players.size) {
+      /* eslint-disable no-param-reassign */
+      player.booster = players.get(passTarget).booster;
+    }
   });
 
-  if (direction === 'left') {
-    players[players.length - 1].booster = firstPlayerBooster;
+  if (direction === PASS_DIRECTIONS.LEFT) {
+    players.get(players.size - 1).booster = firstPlayerBooster;
   } else {
-    players[0].booster = lastPlayerBooster;
+    players.get(0).booster = lastPlayerBooster;
   }
 
-  return List.of(...players);
+  return players;
 };
+
+const pickAiPlayerCards = state => state.forEach((player) => {
+  if (player.isAI) {
+    const highestRatedCard = _.maxBy(player.booster.cards, card => parseFloat(card.rating));
+    highestRatedCard.isPicked = true;
+  }
+});
 
 export const reducer = createReducer(INITIAL_PLAYERS_STATE, {
   [Types.SET_PLAYERS]: setPlayers,
   [Types.PICK_CARD]: pickCard,
   [Types.PASS_PACKS]: passPacks,
+  [Types.PICK_AI_PLAYER_CARDS]: pickAiPlayerCards,
 });

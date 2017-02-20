@@ -37,26 +37,22 @@ export const INITIAL_STATE = Map({
 /* ------------- Reducers ------------- */
 
 export const setsRequest = state => state.merge({
-  ...state,
   fetching: true,
 });
 
 export const setsSuccess = (state: Object, { availableSets }: Array) => state.merge({
-  ...state,
   fetching: false,
   error: null,
   availableSets,
 });
 
 export const setRequest = (state: Object, data: Object) => state.merge({
-  ...state,
   [data.set]: {
     fetching: true,
   },
 });
 
 export const setSuccess = (state: Object, { data }: Object) => state.merge({
-  ...state,
   fetching: false,
   error: null,
   [data.code]: {

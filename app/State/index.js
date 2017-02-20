@@ -8,6 +8,7 @@ export default () => {
     routing,
     sets: require('./SetsRedux').reducer,
     players: require('./PlayersRedux').reducer,
+    draft: require('./DraftRedux').reducer,
   });
 
   return configureStore(rootReducer);

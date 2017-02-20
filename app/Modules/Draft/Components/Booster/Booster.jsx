@@ -8,6 +8,7 @@ const propTypes = {
     set: PropTypes.string,
     cards: PropTypes.array.isRequired,
   }),
+  passDirection: PropTypes.number,
 };
 
 
@@ -15,7 +16,7 @@ const propTypes = {
 /* eslint-disable react/prefer-stateless-function */
 class Booster extends Component {
   render() {
-    const { booster, pickCard } = this.props;
+    const { booster, pickCard, passDirection } = this.props;
 
     /* eslint-disable arrow-body-style */
     return (
@@ -28,7 +29,7 @@ class Booster extends Component {
               src={`http://mtglimited.io/assets/img/cards/${booster.set}/${card.imageName}.jpeg`}
               key={key}
               role="presentation"
-              onTouchTap={() => pickCard(key, 0)}
+              onTouchTap={() => pickCard(key, 0, passDirection)}
             />;
         })}
       </div>

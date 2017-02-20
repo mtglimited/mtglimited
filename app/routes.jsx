@@ -1,14 +1,16 @@
 import React from 'react';
-import { Route } from 'react-router';
+import { Route, IndexRoute } from 'react-router';
 import App from 'Components/App';
-import SetSelector from 'Modules/Draft/Containers/SetSelector';
-import DraftLive from 'Modules/Draft/Containers/DraftLive';
+import DraftRoom from 'Containers/DraftRoom';
 import NotFound from 'Components/NotFound';
+import Lobby from 'Containers/Lobby';
 
 export default (
-  <Route path="/" component={App} >
-    <Route path="/draft" component={SetSelector} />
-    <Route path="/draft/:activeSet" component={DraftLive} />
-    <Route path="*" component={NotFound} />
+  <Route>
+    <Route path="/" component={App} >
+      <IndexRoute component={Lobby} />
+      <Route path="/draft/:roomId" component={DraftRoom} />
+      <Route path="*" component={NotFound} />
+    </Route>
   </Route>
 );
