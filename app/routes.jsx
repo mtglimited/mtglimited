@@ -6,11 +6,9 @@ import NotFound from 'Components/NotFound';
 import Lobby from 'Containers/Lobby';
 
 export default (
-  <Route>
-    <Route path="/" component={App} >
-      <IndexRoute component={Lobby} />
-      <Route path="/draft/:roomId" component={DraftRoom} />
-      <Route path="*" component={NotFound} />
-    </Route>
+  <Route path="/" component={App} >
+    <IndexRoute component={Lobby} />
+    <Route path="/draft/:roomId" component={DraftRoom} />
+    <Route path="*" component={NotFound} />
   </Route>
 );
