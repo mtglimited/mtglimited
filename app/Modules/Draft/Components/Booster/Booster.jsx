@@ -19,13 +19,13 @@ class Booster extends Component {
 
     return (
       <div style={style.booster}>
-        {booster.cards.map((card, key) => !card.isPicked &&
+        {booster.cards.map((card, index) => !card.isPicked &&
           <img
             style={style.card}
             src={`http://mtglimited.io/assets/img/cards/${booster.set}/${card.imageName}.jpeg`}
-            key={key}
+            key={index}
             role="presentation"
-            onTouchTap={() => pickCard(key)}
+            onTouchTap={() => pickCard(index)}
           />,
         )}
       </div>

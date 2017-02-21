@@ -45,17 +45,16 @@ class DraftRoom extends React.Component {
     });
   }
 
-  pickCard(card) {
-    console.log('picked ', card);
+  pickCard(cardIndex) {
+    console.log('picked ', cardIndex);
     this.client.send({
       type: 'pickCard',
-      id: this.client.id,
-      card,
+      cardIndex,
     });
   }
 
   render() {
-    const { messages, players, isDraftStarted } = this.state;
+    const { messages, players, isDraftActive } = this.state;
     let myPlayer;
     if (players && players.length) {
       myPlayer = players.find(player => player.id === this.client.id);
@@ -63,7 +62,7 @@ class DraftRoom extends React.Component {
 
     return (
       <div>
-        {!isDraftStarted &&
+        {!isDraftActive &&
           <div>
             <h1>Draft Room {this.props.params.roomId}</h1>
             <h2>Chat log</h2>
@@ -102,13 +101,20 @@ class DraftRoom extends React.Component {
             </div>
           </div>
         }
-        {isDraftStarted &&
+        {isDraftActive &&
           <div>
-            <h1>Live Draft</h1>
-            <Booster
-              booster={myPlayer.currentPack || []}
-              pickCard={this.pickCard}
-            />
+            {myPlayer.currentPack &&
+              <div>
+                <h1>Live Draft</h1>
+                <Booster
+                  booster={myPlayer.currentPack}
+                  pickCard={this.pickCard}
+                />
+              </div>
+            }
+            {!myPlayer.currentPack &&
+              <h2>Please wait while your neighbor picks a card</h2>
+            }
           </div>
         }
       </div>
