@@ -12,20 +12,9 @@ class Lobby extends React.Component {
   componentDidMount() {
     // fetch all rooms
     axios('https://localhost:2657/rooms').then((response) => {
-      // eslint-disable-next-line
-      debugger;
       this.setState({
         rooms: response.data.rooms,
       });
-    });
-    // this.getRooms();
-  }
-
-  getRooms = () => {
-    // eslint-disable-next-line
-    debugger;
-    this.setState({
-      rooms: this.client.rooms,
     });
   }
 
