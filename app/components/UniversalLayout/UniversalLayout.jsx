@@ -1,13 +1,21 @@
 import React, { PropTypes, Component } from 'react';
-import { Link } from 'react-router';
+import { browserHistory, Link } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
-// TODO
-/* eslint-disable import/no-unresolved */
-import style from './UniversalLayout.style';
+
+const style = {
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  drawer: {
+    header: {
+      margin: '15px',
+    },
+  },
+};
 
 const propTypes = {
   children: PropTypes.element,
@@ -24,6 +32,8 @@ class UniversalLayout extends Component {
 
   closeDrawer = () => this.setState({ isDrawerOpen: false });
 
+  handleTitleTouchTap = () => browserHistory.push('/');
+
   render() {
     const menuButton = (
       <IconButton onTouchTap={() => this.toggleDrawer()}>
@@ -35,6 +45,7 @@ class UniversalLayout extends Component {
       <div style={style}>
         <AppBar
           title="MTGLIMITED"
+          onTitleTouchTap={this.handleTitleTouchTap}
           iconElementLeft={menuButton}
         />
         <Drawer
