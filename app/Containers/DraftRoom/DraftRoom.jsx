@@ -9,43 +9,41 @@ const propTypes = {
 };
 
 class DraftRoom extends React.Component {
-  constructor(props) {
-    super(props);
+  state = {
 
-    this.client = new Colyseus.Client('ws://localhost:2657');
-    this.room = this.client.join('draft');
-    this.state = this.room.state.data;
+  };
+
+  client = new Colyseus.Client('wss://localhost:2657');
+
+  update = state => this.setState(state);
+
+  joinDraft = () => {
+    const { roomId } = this.props.params;
+
+    this.room = this.client.join(`draft/${roomId}`);
     this.room.onUpdate.add(state => this.update(state));
-
-    this.handleSubmitChat = this.handleSubmitChat.bind(this);
-    this.startDraft = this.startDraft.bind(this);
-    this.pickCard = this.pickCard.bind(this);
-    this.update = this.update.bind(this);
+    this.setState(this.room.state.data);
   }
 
-  componentWillUnmount() {
-    this.client.leave();
+  leaveDraft = () => {
+    this.client.close();
   }
 
-  update(state) {
-    this.setState(state);
-  }
-
-  addMessage(message) {
+  addMessage = (message) => {
     this.client.send({ message });
   }
 
-  handleSubmitChat() {
+  handleSubmitChat = () => {
     this.addMessage(this.chatTextInput.getValue());
   }
 
-  startDraft() {
+  startDraft = () => {
     this.client.send({
       type: 'startDraft',
     });
   }
 
-  pickCard(cardIndex) {
+  pickCard = (cardIndex) => {
     console.log('picked ', cardIndex);
     this.client.send({
       type: 'pickCard',
@@ -81,6 +79,18 @@ class DraftRoom extends React.Component {
                   ))}
                 </ul>
               </div>
+            }
+            {!this.room &&
+              <RaisedButton
+                label="Join Draft"
+                onTouchTap={this.joinDraft}
+              />
+            }
+            {this.room &&
+              <RaisedButton
+                label="Leave Draft"
+                onTouchTap={this.leaveDraft}
+              />
             }
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <TextField
