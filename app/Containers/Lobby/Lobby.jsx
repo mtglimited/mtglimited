@@ -1,8 +1,9 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as Colyseus from 'colyseus.js';
-import { browserHistory, Link } from 'react-router';
+import { browserHistory } from 'react-router';
 import axios from 'axios';
+import { List, ListItem } from 'material-ui/List';
 
 class Lobby extends React.Component {
   state = {
@@ -35,19 +36,22 @@ class Lobby extends React.Component {
     console.log(rooms);
 
     return (
-      <div>
+      <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
         <h1>Lobby</h1>
         <RaisedButton
           label="Create new room"
           onTouchTap={this.createDraftRoom}
         />
-        <ul>
+        <List style={{ display: 'flex', flex: 1 }}>
           {Object.keys(rooms).map(id => (
-            <li key={id}>
-              <Link to={rooms[id].roomName}>{rooms[id].roomName}</Link>
-            </li>
+            <ListItem
+              key={id}
+              onTouchTap={() => browserHistory.push(rooms[id].roomName)}
+            >
+              {rooms[id].roomName}
+            </ListItem>
           ))}
-        </ul>
+        </List>
       </div>
     );
   }
