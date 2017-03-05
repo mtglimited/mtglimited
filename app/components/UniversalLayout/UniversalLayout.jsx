@@ -1,10 +1,13 @@
-import React, { PropTypes, Component } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import { browserHistory, Link } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
-import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
+
+import Drawer from 'Containers/Drawer';
+import DrawerActions from 'State/DrawerRedux';
 
 const style = {
   display: 'flex',
@@ -18,25 +21,36 @@ const style = {
 };
 
 const propTypes = {
-  children: PropTypes.element,
+  children: React.PropTypes.element,
+  dispatch: React.PropTypes.func,
 };
 
-class UniversalLayout extends Component {
-  constructor(props) {
-    super(props);
-    this.toggleDrawer = this.toggleDrawer.bind(this);
-    this.state = { isDrawerOpen: false };
+class UniversalLayout extends React.Component {
+  setDrawerContent = (content) => {
+    const { dispatch } = this.props;
+    dispatch(DrawerActions.setContent(content));
+  };
+
+  navigationMenu = (
+    <div>
+      <h3 style={style.drawer.header}>Navigation</h3>
+      <MenuItem
+        // eslint-disable-next-line jsx-a11y/anchor-has-content
+        containerElement={<Link to="/draft" />}
+        onTouchTap={() => this.props.dispatch(DrawerActions.setIsOpen(false))}
+      >Draft</MenuItem>
+    </div>
+  );
+
+  openNavigationMenu = () => {
+    const { dispatch } = this.props;
+    this.setDrawerContent(this.navigationMenu);
+    dispatch(DrawerActions.setIsOpen(true));
   }
-
-  toggleDrawer = () => this.setState({ isDrawerOpen: !this.state.isDrawerOpen });
-
-  closeDrawer = () => this.setState({ isDrawerOpen: false });
-
-  handleTitleTouchTap = () => browserHistory.push('/');
 
   render() {
     const menuButton = (
-      <IconButton onTouchTap={() => this.toggleDrawer()}>
+      <IconButton onTouchTap={this.openNavigationMenu}>
         <MenuIcon />
       </IconButton>
     );
@@ -45,20 +59,10 @@ class UniversalLayout extends Component {
       <div style={style}>
         <AppBar
           title="MTGLIMITED"
-          onTitleTouchTap={this.handleTitleTouchTap}
+          onTitleTouchTap={() => browserHistory.push('/')}
           iconElementLeft={menuButton}
         />
-        <Drawer
-          docked={false}
-          width={200}
-          open={this.state.isDrawerOpen}
-          onRequestChange={isDrawerOpen => this.setState({ isDrawerOpen })}
-        >
-          <h3 style={style.drawer.header}>Navigation</h3>
-          <Link to="/draft">
-            <MenuItem onTouchTap={this.closeDrawer}>Draft</MenuItem>
-          </Link>
-        </Drawer>
+        <Drawer />
         {this.props.children}
       </div>
     );
@@ -67,4 +71,13 @@ class UniversalLayout extends Component {
 
 UniversalLayout.propTypes = propTypes;
 
-export default UniversalLayout;
+const mapStateToProps = state => ({
+  drawer: state.drawer,
+});
+
+const mapDispatchToProps = dispatch => ({ dispatch });
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(UniversalLayout);
