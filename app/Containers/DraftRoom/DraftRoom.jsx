@@ -2,7 +2,7 @@ import React from 'react';
 import * as Colyseus from 'colyseus.js';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import Booster from 'Modules/Draft/Components/Booster';
+import Booster from 'Components/Booster';
 
 const propTypes = {
   params: React.PropTypes.object,
