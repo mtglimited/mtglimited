@@ -1,21 +1,19 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import * as Colyseus from 'colyseus.js';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Booster from 'Components/Booster';
+import DrawerActions from 'State/DrawerRedux';
 
 const propTypes = {
   params: React.PropTypes.object,
+  dispatch: React.PropTypes.func,
 };
 
 class DraftRoom extends React.Component {
-  state = {
-
-  };
-
+  state = {};
   client = new Colyseus.Client('wss://localhost:2657');
-
-  update = state => this.setState(state);
 
   joinDraft = () => {
     const { roomId } = this.props.params;
@@ -25,17 +23,13 @@ class DraftRoom extends React.Component {
     this.setState(this.room.state.data);
   }
 
-  leaveDraft = () => {
-    this.client.close();
-  }
+  leaveDraft = () => this.client.close();
 
-  addMessage = (message) => {
-    this.client.send({ message });
-  }
+  addMessage = message => this.client.send({ message });
 
-  handleSubmitChat = () => {
-    this.addMessage(this.chatTextInput.getValue());
-  }
+  handleSubmitChat = () => this.addMessage(this.chatTextInput.getValue());
+
+  update = state => this.setState(state);
 
   startDraft = () => {
     this.client.send({
@@ -44,11 +38,16 @@ class DraftRoom extends React.Component {
   }
 
   pickCard = (cardIndex) => {
-    console.log('picked ', cardIndex);
     this.client.send({
       type: 'pickCard',
       cardIndex,
     });
+  }
+
+  openConfig = () => {
+    const { dispatch } = this.props;
+    dispatch(DrawerActions.setProps({ openSecondary: true }));
+    dispatch(DrawerActions.setIsOpen(true));
   }
 
   render() {
@@ -92,6 +91,10 @@ class DraftRoom extends React.Component {
                 onTouchTap={this.leaveDraft}
               />
             }
+            <RaisedButton
+              label="Open Config"
+              onTouchTap={this.openConfig}
+            />
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <TextField
                 ref={(element) => { this.chatTextInput = element; }}
@@ -113,14 +116,12 @@ class DraftRoom extends React.Component {
         }
         {isDraftActive &&
           <div>
+            <h1>Live Draft</h1>
             {myPlayer.currentPack &&
-              <div>
-                <h1>Live Draft</h1>
-                <Booster
-                  booster={myPlayer.currentPack}
-                  pickCard={this.pickCard}
-                />
-              </div>
+              <Booster
+                booster={myPlayer.currentPack}
+                pickCard={this.pickCard}
+              />
             }
             {!myPlayer.currentPack &&
               <h2>Please wait while your neighbor picks a card</h2>
@@ -134,4 +135,7 @@ class DraftRoom extends React.Component {
 
 DraftRoom.propTypes = propTypes;
 
-export default DraftRoom;
+export default connect(
+  () => ({}),
+  dispatch => ({ dispatch }),
+)(DraftRoom);
