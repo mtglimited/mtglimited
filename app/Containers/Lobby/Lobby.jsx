@@ -1,60 +1,71 @@
 import React from 'react';
+import Immutable from 'immutable';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+import { firebaseConnect } from 'react-redux-firebase';
 import RaisedButton from 'material-ui/RaisedButton';
-import * as Colyseus from 'colyseus.js';
 import { browserHistory } from 'react-router';
-import axios from 'axios';
 import { List, ListItem } from 'material-ui/List';
 
-class Lobby extends React.Component {
-  state = {
-    rooms: {},
+const mapStateToProps = state => ({
+  profile: state.firebase.get('profile'),
+  rooms: state.firebase.getIn(['data', 'rooms']),
+});
+
+@firebaseConnect(['rooms'])
+@connect(mapStateToProps)
+export default class Lobby extends React.Component {
+  static propTypes = {
+    rooms: ImmutablePropTypes.map,
+    firebase: PropTypes.shape(),
   };
 
-  componentDidMount() {
-    // fetch all rooms
-    axios('https://localhost:2657/rooms').then((response) => {
-      this.setState({
-        rooms: response.data.rooms,
-      });
-    });
-  }
+  static defaultProps = {
+    rooms: Immutable.Map(),
+  };
 
-  createDraftRoom = () => {
-    const config = {
-      id: this.client.id,
-    };
-    console.log(this.client.id);
-    axios.put('https://localhost:2657/rooms', config).then(() => {
-      browserHistory.push(`/draft/${config.id}`);
+  createRoom = async () => {
+    const { firebase } = this.props;
+    const owner = firebase.auth().currentUser.uid;
+    const name = 'New Draft Room';
+    const ref = firebase.push('rooms', {
+      owner,
+      name,
+      seats: false,
+      set: false,
     });
-  }
 
-  client = new Colyseus.Client('wss://localhost:2657');
+    browserHistory.push(`/rooms/${ref.key}`);
+  }
 
   render() {
-    const { rooms } = this.state;
-    console.log(rooms);
+    const { rooms } = this.props;
 
     return (
-      <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
-        <h1>Lobby</h1>
-        <RaisedButton
-          label="Create new room"
-          onTouchTap={this.createDraftRoom}
-        />
-        <List style={{ display: 'flex', flex: 1 }}>
-          {Object.keys(rooms).map(id => (
-            <ListItem
-              key={id}
-              onTouchTap={() => browserHistory.push(rooms[id].roomName)}
-            >
-              {rooms[id].roomName}
-            </ListItem>
-          ))}
-        </List>
+      <div style={{ display: 'flex', flex: 1, flexDirection: 'column', margin: 15 }}>
+        <span style={{ display: 'flex' }}>
+          <h2 style={{ flex: 1, margin: 0 }}>Lobby</h2>
+          <RaisedButton
+            label="Create new room"
+            onTouchTap={this.createRoom}
+          />
+        </span>
+        {rooms &&
+          <List style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+            {rooms.count() === 0 &&
+              <p>There are no current open drafts. Create a new one!</p>
+            }
+            {rooms.map((room, key) => (
+              <ListItem
+                key={key}
+                primaryText={room.get('name')}
+                onTouchTap={() => browserHistory.push(`/rooms/${key}`)}
+              />
+            )).valueSeq()}
+          </List>
+        }
       </div>
     );
   }
 }
-
-export default Lobby;

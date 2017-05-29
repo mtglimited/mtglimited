@@ -41,6 +41,7 @@
       "webpack": {
         "config": "webpack.config.js"
       }
-    }
+    },
+    "react/forbid-prop-types": ["off"]
   }
 }

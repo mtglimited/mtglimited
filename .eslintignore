@@ -5,3 +5,4 @@ webpack.*.js
 server.js
 deploy.js
 *.jsx.snap
+*.tpl.html

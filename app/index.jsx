@@ -1,9 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-// http://www.material-ui.com/#/get-started/installation --- Remove when react has this natively
 import injectTapEventPlugin from 'react-tap-event-plugin';
-
 import Root from 'Containers/Root';
 
 injectTapEventPlugin();

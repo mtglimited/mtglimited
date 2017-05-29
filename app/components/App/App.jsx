@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import UniversalLayout from 'Components/UniversalLayout';
 
@@ -6,18 +7,10 @@ const propTypes = {
   children: PropTypes.element,
 };
 
-const style = {
-  display: 'flex',
-  flex: 1,
-  margin: '15px',
-};
-
 const App = ({ children }) => (
   <MuiThemeProvider>
     <UniversalLayout>
-      <div style={style}>
-        { children }
-      </div>
+      { children }
     </UniversalLayout>
   </MuiThemeProvider>
 );

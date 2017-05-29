@@ -10,13 +10,11 @@ import createStore from 'State';
 const store = createStore();
 const history = syncHistoryWithStore(browserHistory, store);
 
-export default function Root() {
-  return (
-    <Provider store={store}>
-      <div>
-        <Router history={history} routes={routes} />
-        <DevTools />
-      </div>
-    </Provider>
-  );
-}
+export default () => (
+  <Provider store={store}>
+    <div>
+      <Router history={history} routes={routes} />
+      <DevTools />
+    </div>
+  </Provider>
+);

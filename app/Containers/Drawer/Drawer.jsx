@@ -1,12 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import UIDrawer from 'material-ui/Drawer';
 
 import DrawerActions from 'State/DrawerRedux';
 
 const propTypes = {
-  drawer: React.PropTypes.object,
-  dispatch: React.PropTypes.func,
+  drawer: PropTypes.object,
+  dispatch: PropTypes.func,
 };
 
 export const Drawer = ({ drawer, dispatch }) => (

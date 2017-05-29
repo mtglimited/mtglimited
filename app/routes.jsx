@@ -8,7 +8,7 @@ import Lobby from 'Containers/Lobby';
 export default (
   <Route path="/" component={App} >
     <IndexRoute component={Lobby} />
-    <Route path="/draft/:roomId" component={DraftRoom} />
+    <Route path="/rooms/:roomId" component={DraftRoom} />
     <Route path="*" component={NotFound} />
   </Route>
 );

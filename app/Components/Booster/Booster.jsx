@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Radium from 'radium';
 import style from './Booster.style';
 
@@ -13,7 +14,7 @@ const propTypes = {
 
 @Radium
 /* eslint-disable react/prefer-stateless-function */
-class Booster extends Component {
+class Booster extends React.Component {
   render() {
     const { booster, pickCard } = this.props;
 

@@ -1,141 +1,127 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import * as Colyseus from 'colyseus.js';
-import TextField from 'material-ui/TextField';
+import { firebaseConnect, populatedDataToJS } from 'react-redux-firebase';
+import Immutable, { fromJS } from 'immutable';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
+import AccountCircle from 'material-ui/svg-icons/action/account-circle';
+import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
-import Booster from 'Components/Booster';
-import DrawerActions from 'State/DrawerRedux';
 
-const propTypes = {
-  params: React.PropTypes.object,
-  dispatch: React.PropTypes.func,
-};
+const SEAT_COUNT = 8;
 
+const roomPopulates = [
+  { child: 'owner', root: 'users' },
+];
+
+const seatPopulates = [
+  { child: 'owner', root: 'users' },
+];
+
+const mapStateToProps = ({ firebase }, ownProps) => ({
+  room: fromJS(populatedDataToJS(firebase, `rooms/${ownProps.params.roomId}`, roomPopulates)),
+  seats: fromJS(populatedDataToJS(firebase, 'seats', seatPopulates)),
+  sets: firebase.getIn(['data', 'sets']),
+});
+
+@firebaseConnect(ownProps => [
+  {
+    path: `rooms/${ownProps.params.roomId}`,
+    populates: roomPopulates,
+  },
+  'sets',
+  `seats#orderByChild=room&equalTo=${ownProps.params.roomId}`,
+])
+@connect(mapStateToProps)
 class DraftRoom extends React.Component {
-  state = {};
-  client = new Colyseus.Client('wss://localhost:2657');
+  static propTypes = {
+    room: PropTypes.shape(),
+    firebase: PropTypes.shape(),
+    params: PropTypes.shape(),
+    seats: PropTypes.shape(),
+    sets: PropTypes.shape(),
+  };
 
-  joinDraft = () => {
-    const { roomId } = this.props.params;
+  static defaultProps = {
+    room: Immutable.Map(),
+    profile: Immutable.Map(),
+    sets: Immutable.Map(),
+    seats: Immutable.Map(),
+  };
 
-    this.room = this.client.join(`draft/${roomId}`);
-    this.room.onUpdate.add(state => this.update(state));
-    this.setState(this.room.state.data);
+  getSeatListItem = (index) => {
+    const { seats } = this.props;
+    const seat = seats && seats.find(s => s.get('index') === index);
+    if (seat) {
+      return (
+        <ListItem
+          key={index}
+          primaryText={`Seat ${index + 1}`}
+          leftIcon={<AccountCircle />}
+        />
+      );
+    }
+    return (
+      <ListItem
+        key={index}
+        primaryText={`Seat ${index + 1} (open)`}
+        leftIcon={<AccountCircle />}
+        onTouchTap={() => this.joinDraft(index)}
+      />
+    );
   }
-
-  leaveDraft = () => this.client.close();
-
-  addMessage = message => this.client.send({ message });
-
-  handleSubmitChat = () => this.addMessage(this.chatTextInput.getValue());
-
-  update = state => this.setState(state);
 
   startDraft = () => {
-    this.client.send({
-      type: 'startDraft',
-    });
+    const { firebase, params } = this.props;
+    firebase.set(`rooms/${params.roomId}/isDraftStarted`, true);
   }
 
-  pickCard = (cardIndex) => {
-    this.client.send({
-      type: 'pickCard',
-      cardIndex,
-    });
+  chooseSet = (event, key, value) => {
+    const { firebase, params } = this.props;
+    firebase.set(`rooms/${params.roomId}/set`, value);
   }
 
-  openConfig = () => {
-    const { dispatch } = this.props;
-    dispatch(DrawerActions.setProps({ openSecondary: true }));
-    dispatch(DrawerActions.setIsOpen(true));
+  joinDraft = (index) => {
+    const { firebase, params } = this.props;
+    const userId = firebase.auth().currentUser.uid;
+    const seatRef = firebase.push('seats', {
+      owner: userId,
+      room: params.roomId,
+      index,
+    });
+    const roomSeatRef = firebase.push(`rooms/${params.roomId}/seats`, seatRef.key);
+    firebase.set(`users/${userId}/seat`, roomSeatRef.key);
   }
 
   render() {
-    const { messages, players, isDraftActive } = this.state;
-    let myPlayer;
-    if (players && players.length) {
-      myPlayer = players.find(player => player.id === this.client.id);
-    }
+    const { room, params, sets, firebase, seats } = this.props;
 
     return (
-      <div>
-        {!isDraftActive &&
-          <div>
-            <h1>Draft Room {this.props.params.roomId}</h1>
-            <h2>Chat log</h2>
-            <ul style={{ listStyle: 'none' }}>
-              {messages &&
-                messages.map((message, index) => (
-                  <li key={index}>{message}</li>
-                ))}
-            </ul>
-            {players &&
-              <div>
-                <h2>Players ({players.length})</h2>
-                <ul style={{ listStyle: 'none' }}>
-                  {players.map((player, index) => (
-                    <li key={index}>{player.id}</li>
-                  ))}
-                </ul>
-              </div>
-            }
-            {!this.room &&
-              <RaisedButton
-                label="Join Draft"
-                onTouchTap={this.joinDraft}
-              />
-            }
-            {this.room &&
-              <RaisedButton
-                label="Leave Draft"
-                onTouchTap={this.leaveDraft}
-              />
-            }
-            <RaisedButton
-              label="Open Config"
-              onTouchTap={this.openConfig}
+      <div style={{ margin: 15 }}>
+        <h2>{room.get('name')}</h2>
+        {seats && seats.count() === SEAT_COUNT &&
+          <RaisedButton label="Start Draft" primary />
+        }
+        <DropDownMenu
+          value={room.get('set')}
+          onChange={(event, key, value) => firebase.set(`rooms/${params.roomId}/set`, value)}
+        >
+          <MenuItem primaryText="Select a set" value={false} />
+          {sets.valueSeq().map(set => (
+            <MenuItem
+              key={set.get('abbr')}
+              value={set.get('abbr')}
+              primaryText={set.get('name')}
             />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <TextField
-                ref={(element) => { this.chatTextInput = element; }}
-                hintText="Enter chat here"
-              />
-              <RaisedButton
-                style={{ marginBottom: '10px' }}
-                label="Submit"
-                onTouchTap={this.handleSubmitChat}
-              />
-              {players && players.length > 1 &&
-                <RaisedButton
-                  label="Start Draft"
-                  onTouchTap={this.startDraft}
-                />
-              }
-            </div>
-          </div>
-        }
-        {isDraftActive &&
-          <div>
-            <h1>Live Draft</h1>
-            {myPlayer.currentPack &&
-              <Booster
-                booster={myPlayer.currentPack}
-                pickCard={this.pickCard}
-              />
-            }
-            {!myPlayer.currentPack &&
-              <h2>Please wait while your neighbor picks a card</h2>
-            }
-          </div>
-        }
+          ))}
+        </DropDownMenu>
+        <List>
+          {Immutable.Range(0, SEAT_COUNT).map(index => this.getSeatListItem(index))}
+        </List>
       </div>
     );
   }
 }
 
-DraftRoom.propTypes = propTypes;
-
-export default connect(
-  () => ({}),
-  dispatch => ({ dispatch }),
-)(DraftRoom);
+export default DraftRoom;

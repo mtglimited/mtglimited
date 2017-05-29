@@ -1,10 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { firebaseConnect } from 'react-redux-firebase';
 import { browserHistory, Link } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import MenuItem from 'material-ui/MenuItem';
+import FlatButton from 'material-ui/FlatButton';
+import Avatar from 'material-ui/Avatar';
 
 import Drawer from 'Containers/Drawer';
 import DrawerActions from 'State/DrawerRedux';
@@ -15,21 +19,42 @@ const style = {
   flexDirection: 'column',
   drawer: {
     header: {
-      margin: '15px',
+      margin: 15,
     },
   },
 };
 
 const propTypes = {
-  children: React.PropTypes.element,
-  dispatch: React.PropTypes.func,
+  children: PropTypes.element,
+  dispatch: PropTypes.func,
+  firebase: PropTypes.object,
+  profile: PropTypes.object,
 };
 
-class UniversalLayout extends React.Component {
-  setDrawerContent = (content) => {
-    const { dispatch } = this.props;
-    dispatch(DrawerActions.setContent(content));
-  };
+const mapStateToProps = state => ({
+  profile: state.firebase.get('profile'),
+});
+
+@firebaseConnect()
+@connect(mapStateToProps)
+export default class UniversalLayout extends React.Component {
+  static propTypes = propTypes;
+
+  signIn = async () => {
+    const { firebase } = this.props;
+    await firebase.login({
+      provider: 'google',
+      type: 'popup',
+    });
+
+    // TODO: Remove this when there is a better way to get user id
+    const user = firebase.auth().currentUser;
+    firebase.set(`users/${user.uid}/uid`, firebase.auth().currentUser.uid);
+  }
+
+  signOut = () => {
+    this.props.firebase.logout();
+  }
 
   navigationMenu = (
     <div>
@@ -44,40 +69,47 @@ class UniversalLayout extends React.Component {
 
   openNavigationMenu = () => {
     const { dispatch } = this.props;
-    this.setDrawerContent(this.navigationMenu);
+    dispatch(DrawerActions.setContent(this.navigationMenu));
     dispatch(DrawerActions.setIsOpen(true));
   }
 
-  render() {
-    const menuButton = (
-      <IconButton onTouchTap={this.openNavigationMenu}>
-        <MenuIcon />
-      </IconButton>
-    );
+  menuButton = (
+    <IconButton onTouchTap={this.openNavigationMenu}>
+      <MenuIcon />
+    </IconButton>
+  );
 
+  render() {
+    const { profile, firebase } = this.props;
     return (
       <div style={style}>
         <AppBar
           title="MTGLIMITED"
           onTitleTouchTap={() => browserHistory.push('/')}
-          iconElementLeft={menuButton}
-        />
+          iconElementLeft={this.menuButton}
+        >
+          <span style={{ margin: 'auto' }}>
+            { !profile &&
+              <FlatButton
+                label="Sign In"
+                onTouchTap={this.signIn}
+              />
+            }
+            { profile &&
+              <span style={{ margin: 'auto' }}>
+                <Avatar src={profile.get('avatarUrl')} />
+                <span>{profile.get('displayName')}</span>
+                <FlatButton
+                  label="Sign Out"
+                  onTouchTap={() => firebase.logout()}
+                />
+              </span>
+            }
+          </span>
+        </AppBar>
         <Drawer />
         {this.props.children}
       </div>
     );
   }
 }
-
-UniversalLayout.propTypes = propTypes;
-
-const mapStateToProps = state => ({
-  drawer: state.drawer,
-});
-
-const mapDispatchToProps = dispatch => ({ dispatch });
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(UniversalLayout);

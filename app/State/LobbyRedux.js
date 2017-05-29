@@ -1,7 +1,7 @@
 import { fromJS } from 'immutable';
 
 export const Types = {
-  GET_DRAFT: 'sharpspring/draft/GET_DRAFT',
+  GET_ROOMS: 'sharpspring/lobby/GET_ROOMS',
 };
 
 export const INITIAL_STATE = fromJS({

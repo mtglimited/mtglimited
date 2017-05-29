@@ -1,3 +1,2 @@
-import UniversalLayout from './UniversalLayout';
-
-export default UniversalLayout;
+/* eslint-disable import/no-unresolved */
+export default from './UniversalLayout';
