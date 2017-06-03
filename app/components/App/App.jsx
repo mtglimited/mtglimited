@@ -15,7 +15,7 @@ const propTypes = {
 const App = ({ children }) => (
   <MuiThemeProvider muiTheme={muiTheme}>
     <UniversalLayout>
-      <div style={{ fontFamily: 'Lato, Helvetica, Arial, sans-serif' }}>
+      <div style={{ fontFamily: 'Lato, Helvetica, Arial, sans-serif', flex: 1, display: 'flex', flexDirection: 'column' }}>
         { children }
       </div>
     </UniversalLayout>

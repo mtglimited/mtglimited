@@ -12,7 +12,7 @@ const history = syncHistoryWithStore(browserHistory, store);
 
 export default () => (
   <Provider store={store}>
-    <div>
+    <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
       <Router history={history} routes={routes} />
       <DevTools />
     </div>
