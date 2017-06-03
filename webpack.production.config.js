@@ -9,6 +9,7 @@ var StatsPlugin = require('stats-webpack-plugin');
 module.exports = {
   // The entry file. All your app roots fromn here.
   entry: [
+    'babel-polyfill',
     path.join(__dirname, 'app/index.jsx')
   ],
   // Where you want the output to go
@@ -78,9 +79,6 @@ module.exports = {
       loader: 'url-loader'
     }]
   },
-  postcss: [
-    require('autoprefixer')
-  ],
   resolve: {
     extensions: ['', '.js', '.jsx'],
     root: [

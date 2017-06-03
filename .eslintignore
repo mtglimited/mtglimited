@@ -6,3 +6,4 @@ server.js
 deploy.js
 *.jsx.snap
 *.tpl.html
+functions
