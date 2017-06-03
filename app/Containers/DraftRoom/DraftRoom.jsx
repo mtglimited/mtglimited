@@ -101,10 +101,13 @@ export default class DraftRoom extends React.Component {
   joinDraft = (index) => {
     const { firebase, params, seats } = this.props;
     const userId = firebase.auth().currentUser.uid;
-    const hasSeat = seats && seats.find(s => s.getIn(['owner', 'uid'] === userId));
+    if (seats) {
+      // eslint-disable-next-line
+      const hasSeat = seats.find(seat => seat.getIn(['owner', 'uid']) === userId);
 
-    if (hasSeat) {
-      return;
+      if (hasSeat) {
+        return;
+      }
     }
 
     const seatRef = firebase.push('seats', {
