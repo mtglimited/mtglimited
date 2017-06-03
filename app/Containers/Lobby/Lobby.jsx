@@ -3,14 +3,13 @@ import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { firebaseConnect } from 'react-redux-firebase';
+import { firebaseConnect, populatedDataToJS } from 'react-redux-firebase';
 import RaisedButton from 'material-ui/RaisedButton';
 import { browserHistory } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 
-const mapStateToProps = state => ({
-  profile: state.firebase.get('profile'),
-  rooms: state.firebase.getIn(['data', 'rooms']),
+const mapStateToProps = ({ firebase }) => ({
+  rooms: Immutable.fromJS(populatedDataToJS(firebase, 'rooms')),
 });
 
 @firebaseConnect(['rooms'])
