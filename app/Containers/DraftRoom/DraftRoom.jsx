@@ -3,15 +3,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firebaseConnect, populatedDataToJS, pathToJS } from 'react-redux-firebase';
 import Immutable, { fromJS } from 'immutable';
-import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import AccountCircle from 'material-ui/svg-icons/action/account-circle';
 import Clear from 'material-ui/svg-icons/content/clear';
 import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import Avatar from 'material-ui/Avatar';
+import SelectField from 'material-ui/SelectField';
 
 const SEAT_COUNT = 8;
+
+const SEAT_COUNT_OPTIONS = Immutable.List([6, 8]);
 
 const roomPopulates = [
   { child: 'owner', root: 'users' },
@@ -123,10 +125,10 @@ export default class DraftRoom extends React.Component {
     const { room, params, sets, firebase, seats } = this.props;
 
     return (
-      <div style={{ margin: 15 }}>
+      <div style={{ margin: 15, display: 'flex', flexDirection: 'column' }}>
         <h2>{room.get('name')}</h2>
-        <DropDownMenu
-          style={{ display: 'flex' }}
+        <SelectField
+          floatingLabelText="Set"
           value={room.get('set')}
           onChange={(event, key, value) => firebase.set(`rooms/${params.roomId}/set`, value)}
         >
@@ -138,10 +140,24 @@ export default class DraftRoom extends React.Component {
               primaryText={set.get('name')}
             />
           ))}
-        </DropDownMenu>
+        </SelectField>
+        <SelectField
+          floatingLabelText="Number of Players"
+          value={room.get('numberOfSeats', SEAT_COUNT_OPTIONS.get(0))}
+          onChange={(event, key, value) => firebase.set(`rooms/${params.roomId}/numberOfSeats`, value)}
+        >
+          {SEAT_COUNT_OPTIONS.map(number => (
+            <MenuItem
+              key={number}
+              value={number}
+              primaryText={number}
+            />
+          ))}
+        </SelectField>
+
         {firebase.auth().currentUser &&
           <List>
-            {Immutable.Range(0, SEAT_COUNT).map(index => this.getSeatListItem(index))}
+            {Immutable.Range(0, room.get('numberOfSeats', SEAT_COUNT_OPTIONS.get(0))).map(index => this.getSeatListItem(index))}
           </List>
         }
         <RaisedButton

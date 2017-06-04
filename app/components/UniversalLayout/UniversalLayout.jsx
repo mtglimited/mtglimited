@@ -24,21 +24,21 @@ const style = {
   },
 };
 
-const propTypes = {
-  children: PropTypes.element.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  firebase: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired,
-};
-
-const mapStateToProps = state => ({
-  profile: state.firebase.get('profile'),
-});
-
 @firebaseConnect()
-@connect(mapStateToProps)
+@connect(state => ({
+  profile: state.firebase.get('profile'),
+}))
 export default class UniversalLayout extends React.Component {
-  static propTypes = propTypes;
+  static propTypes = {
+    children: PropTypes.element.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    firebase: PropTypes.shape().isRequired,
+    profile: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    profile: null,
+  };
 
   signIn = async () => {
     const { firebase } = this.props;
