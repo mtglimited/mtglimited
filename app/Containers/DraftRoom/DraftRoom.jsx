@@ -132,7 +132,6 @@ export default class DraftRoom extends React.Component {
           value={room.get('set')}
           onChange={(event, key, value) => firebase.set(`rooms/${params.roomId}/set`, value)}
         >
-          <MenuItem primaryText="Select a set" value={false} />
           {sets.valueSeq().map(set => (
             <MenuItem
               key={set.get('abbr')}
