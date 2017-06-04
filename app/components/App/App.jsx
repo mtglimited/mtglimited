@@ -9,7 +9,7 @@ const muiTheme = getMuiTheme({
 });
 
 const propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.element.isRequired,
 };
 
 const App = ({ children }) => (

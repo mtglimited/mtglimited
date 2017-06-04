@@ -6,8 +6,8 @@ import UIDrawer from 'material-ui/Drawer';
 import DrawerActions from 'State/DrawerRedux';
 
 const propTypes = {
-  drawer: PropTypes.object,
-  dispatch: PropTypes.func,
+  drawer: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 export const Drawer = ({ drawer, dispatch }) => (

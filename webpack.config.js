@@ -13,10 +13,6 @@ module.exports = {
     'react-hot-loader/patch',
     path.join(__dirname, 'app/index.jsx')
   ],
-  paths: [
-    './node_modules',
-    './app'
-  ],
   output: {
     path: path.join(__dirname, '/dist/'),
     filename: '[name].js',
@@ -28,34 +24,35 @@ module.exports = {
       inject: 'body',
       filename: 'index.html'
     }),
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development')
     })
   ],
-  eslint: {
-    configFile: '.eslintrc',
-    failOnWarning: false,
-    failOnError: true
-  },
   module: {
-    preLoaders: [{
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
-      loader: 'eslint'
-    }],
-    loaders: [{
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader'
-    }]
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        enforce: 'pre',
+        loader: 'eslint-loader',
+        options: {
+          failOnError: true
+        }
+      },
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader'
+      }
+    ]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx'],
-    root: [
-      path.resolve(__dirname, './app')
+    extensions: ['.js', '.jsx'],
+    modules: [
+      path.resolve(__dirname, 'app'),
+      'node_modules'
     ]
   }
 };

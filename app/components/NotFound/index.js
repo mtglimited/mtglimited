@@ -1,3 +1,2 @@
-import NotFound from './NotFound';
-
-export default NotFound;
+// eslint-ignore-next-line
+export default from './NotFound';

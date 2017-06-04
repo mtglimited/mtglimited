@@ -40,8 +40,8 @@ const mapStateToProps = ({ firebase }, ownProps) => ({
 export default class DraftRoom extends React.Component {
   static propTypes = {
     room: PropTypes.shape(),
-    firebase: PropTypes.shape(),
-    params: PropTypes.shape(),
+    firebase: PropTypes.shape().isRequired,
+    params: PropTypes.shape().isRequired,
     seats: PropTypes.shape(),
     sets: PropTypes.shape(),
   };

@@ -18,8 +18,8 @@ const style = {
 }))
 export default class Authentication extends React.Component {
   static propTypes = {
-    auth: PropTypes.shape(),
-    children: PropTypes.element,
+    auth: PropTypes.shape().isRequired,
+    children: PropTypes.element.isRequired,
   }
 
   render() {

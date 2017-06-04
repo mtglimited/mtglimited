@@ -1,14 +1,29 @@
-import { createReducer, createActions } from 'reduxsauce';
 import { fromJS } from 'immutable';
 
-const { Types, Creators } = createActions({
-  setIsOpen: ['isOpen'],
-  setContent: ['content'],
-  setProps: ['props'],
+const Types = {
+  OPEN: 'mtglimited/drawer/OPEN',
+  CLOSE: 'mtglimited/drawer/CLOSE',
+  SET_CONTENT: 'mtglimited/drawer/SET_CONTENT',
+  SET_PROPS: 'mtglimited/drawer/SET_PROPS',
+};
+
+export const open = () => ({
+  type: Types.OPEN,
 });
 
-export const SetTypes = Types;
-export default Creators;
+export const close = () => ({
+  type: Types.CLOSE,
+});
+
+export const setContent = content => ({
+  type: Types.SET_CONTENT,
+  content,
+});
+
+export const setProps = props => ({
+  type: Types.SET_PROPS,
+  props,
+});
 
 export const INITIAL_STATE = fromJS({
   isOpen: false,
@@ -16,14 +31,18 @@ export const INITIAL_STATE = fromJS({
   props: {},
 });
 
-const setIsOpen = (state, { isOpen }) => state.set('isOpen', isOpen);
+export default (state = INITIAL_STATE, action) => {
+  switch (action.type) {
+    case Types.OPEN:
+      return state.set('isOpen', true);
+    case Types.CLOSE:
+      return state.set('isOpen', false);
+    case Types.SET_CONTENT:
+      return state.set('content', action.content);
+    case Types.SET_PROPS:
+      return state.set('props', action.props);
+    default:
+      return state;
+  }
+};
 
-const setContent = (state, { content }) => state.set('content', content);
-
-const setProps = (state, { props }) => state.set('props', props);
-
-export const reducer = createReducer(INITIAL_STATE, {
-  [Types.SET_IS_OPEN]: setIsOpen,
-  [Types.SET_CONTENT]: setContent,
-  [Types.SET_PROPS]: setProps,
-});

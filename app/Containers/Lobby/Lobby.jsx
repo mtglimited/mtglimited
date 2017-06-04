@@ -16,8 +16,8 @@ const mapStateToProps = ({ firebase }) => ({
 @connect(mapStateToProps)
 export default class Lobby extends React.Component {
   static propTypes = {
-    rooms: ImmutablePropTypes.map,
-    firebase: PropTypes.shape(),
+    rooms: ImmutablePropTypes.map.isRequired,
+    firebase: PropTypes.shape().isRequired,
   };
 
   static defaultProps = {
@@ -57,7 +57,7 @@ export default class Lobby extends React.Component {
             }
             {rooms.map((room, key) => (
               <ListItem
-                key={key}
+                key={room.get('id', 'foo')}
                 primaryText={room.get('name')}
                 onTouchTap={() => browserHistory.push(`/rooms/${key}`)}
               />
