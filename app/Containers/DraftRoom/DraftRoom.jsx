@@ -10,6 +10,7 @@ import Clear from 'material-ui/svg-icons/content/clear';
 import { List, ListItem } from 'material-ui/List';
 import RaisedButton from 'material-ui/RaisedButton';
 import Avatar from 'material-ui/Avatar';
+import Title from 'Components/Title';
 
 const SEAT_COUNT = 8;
 
@@ -39,7 +40,7 @@ const mapStateToProps = ({ firebase }, ownProps) => ({
 @connect(mapStateToProps)
 export default class DraftRoom extends React.Component {
   static propTypes = {
-    room: PropTypes.shape(),
+    room: PropTypes.shape().isRequired,
     firebase: PropTypes.shape().isRequired,
     params: PropTypes.shape().isRequired,
     seats: PropTypes.shape(),
@@ -47,7 +48,6 @@ export default class DraftRoom extends React.Component {
   };
 
   static defaultProps = {
-    room: Immutable.Map(),
     profile: Immutable.Map(),
     sets: Immutable.Map(),
     seats: Immutable.Map(),
@@ -121,10 +121,15 @@ export default class DraftRoom extends React.Component {
 
   render() {
     const { room, params, sets, firebase, seats } = this.props;
-
+    if (!room) {
+      return null;
+    }
     return (
       <div style={{ margin: 15 }}>
-        <h2>{room.get('name')}</h2>
+        <Title
+          name={room.get('name')}
+          setName={name => firebase.set(`rooms/${params.roomId}/name`, name)}
+        />
         <DropDownMenu
           style={{ display: 'flex' }}
           value={room.get('set')}

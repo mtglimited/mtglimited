@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import { browserHistory, Link } from 'react-router';
@@ -24,13 +25,6 @@ const style = {
   },
 };
 
-const propTypes = {
-  children: PropTypes.element.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  firebase: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired,
-};
-
 const mapStateToProps = state => ({
   profile: state.firebase.get('profile'),
 });
@@ -38,7 +32,16 @@ const mapStateToProps = state => ({
 @firebaseConnect()
 @connect(mapStateToProps)
 export default class UniversalLayout extends React.Component {
-  static propTypes = propTypes;
+  static propTypes = {
+    children: PropTypes.element.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    firebase: PropTypes.shape().isRequired,
+    profile: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    profile: Immutable.Map(),
+  };
 
   signIn = async () => {
     const { firebase } = this.props;

@@ -57,7 +57,7 @@ export default class Lobby extends React.Component {
             }
             {rooms.map((room, key) => (
               <ListItem
-                key={room.get('id', 'foo')}
+                key={key} // eslint-disable-line
                 primaryText={room.get('name')}
                 onTouchTap={() => browserHistory.push(`/rooms/${key}`)}
               />
