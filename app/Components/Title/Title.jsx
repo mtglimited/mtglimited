@@ -7,19 +7,19 @@ import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import FontIcon from 'material-ui/FontIcon';
 import { grey700 } from 'material-ui/styles/colors';
 
-const propTypes = {
-  name: React.PropTypes.string.isRequired,
-  editingName: React.PropTypes.bool,
-  setEditingName: React.PropTypes.func.isRequired,
-  setName: React.PropTypes.func.isRequired,
-};
-
 class Title extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hover: false, newName: '' };
-  }
+  static propTypes = {
+    name: React.PropTypes.string.isRequired,
+    editingName: React.PropTypes.bool,
+    setEditingName: React.PropTypes.func.isRequired,
+    setName: React.PropTypes.func.isRequired,
+  };
 
+  static defaultProps = {
+    editingName: false,
+  };
+
+  state = { hover: false, newName: '' };
   onMouseEnter = () => this.setState({ hover: true });
   onMouseLeave = () => this.setState({ hover: false });
   changeName = event => this.setState({
@@ -64,7 +64,5 @@ class Title extends React.Component {
     );
   }
 }
-
-Title.propTypes = propTypes;
 
 export default Title;

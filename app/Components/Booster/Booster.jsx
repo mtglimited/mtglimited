@@ -8,7 +8,7 @@ const propTypes = {
   booster: PropTypes.shape({
     set: PropTypes.string,
     cards: PropTypes.array.isRequired,
-  }),
+  }).isRequired,
 };
 
 
@@ -22,10 +22,10 @@ class Booster extends React.Component {
       <div style={style.booster}>
         {booster.cards.map((card, index) => !card.isPicked &&
           <img
+            alt={card.imageName}
             style={style.card}
             src={`http://mtglimited.io/assets/img/cards/${booster.set}/${card.imageName}.jpeg`}
-            key={index}
-            role="presentation"
+            key={card.imageName}
             onTouchTap={() => pickCard(index)}
           />,
         )}

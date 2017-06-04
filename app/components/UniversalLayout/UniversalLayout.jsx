@@ -11,7 +11,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
 
 import Drawer from 'Containers/Drawer';
-import DrawerActions from 'State/DrawerRedux';
+import * as DrawerActions from 'State/DrawerRedux';
 
 const style = {
   display: 'flex',
@@ -25,10 +25,10 @@ const style = {
 };
 
 const propTypes = {
-  children: PropTypes.element,
-  dispatch: PropTypes.func,
-  firebase: PropTypes.object,
-  profile: PropTypes.object,
+  children: PropTypes.element.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  firebase: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
