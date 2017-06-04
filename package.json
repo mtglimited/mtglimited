@@ -6,7 +6,6 @@
   "author": "Michael Sholty",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.16.2",
     "immutable": "^3.8.1",
     "material-ui": "^0.18.1",
     "prop-types": "^15.5.10",
@@ -64,7 +63,7 @@
     "start": "node server.js",
     "test": "./node_modules/jest/bin/jest.js",
     "build": "rimraf dist && webpack --config ./webpack.production.config.js --progress --profile --colors",
-    "deploy": "npm run build && node deploy"
+    "deploy": "yarn build && firebase deploy"
   },
   "repository": {
     "type": "git",

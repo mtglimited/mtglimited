@@ -1,11 +1,11 @@
-import _ from 'lodash';
+import Immutable from 'immutable';
 
 export default class BoosterPack {
   constructor() {
-    this.cards = [];
+    this.cards = new Immutable.List();
   }
 
   unpickedCards() {
-    return _.filter(this.cards, card => !card.picked);
+    return this.cards.filter(card => !card.get('picked'));
   }
 }

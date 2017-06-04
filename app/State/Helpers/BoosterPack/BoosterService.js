@@ -1,21 +1,21 @@
-import _ from 'lodash';
 import Booster from './Booster';
 
 export default class BoosterPackService {
-  constructor() {
+  constructor(setAbbr, set) {
     this.sets = [];
+    this.sets[setAbbr] = set;
   }
 
   createBooster(setAbbr) {
     const set = this.sets[setAbbr];
     const booster = new Booster();
-    const setGroupedByRarity = _.groupBy(set.cards, card => _.toLower(card.rarity));
+    const setGroupedByRarity = set.cards.groupBy(card => card.rarity.toLowerCase());
     const isMythicPack = this.isMythicRare();
 
-    _.forEach(set.booster, (rarity) => {
+    set.booster.forEach((rarity) => {
       let rarityKey = rarity;
 
-      if (_.isObject(rarity)) {
+      if (typeof rarity === 'object') {
         rarityKey = isMythicPack ? 'mythic rare' : 'rare';
       }
 
@@ -25,7 +25,7 @@ export default class BoosterPackService {
         const randomCard = this.getRandomCard(cardChoices);
 
         randomCard.setAbbr = setAbbr;
-        booster.cards.push(_.clone(randomCard));
+        booster.cards.push(randomCard);
       }
     });
 
@@ -33,21 +33,7 @@ export default class BoosterPackService {
     return booster;
   }
 
-  setSet(setAbbr, set) {
-    this.sets[setAbbr] = set;
-  }
-
-  getSet(setAbbr) {
-    return this.sets[setAbbr];
-  }
-
-  // TODO: do not add duplicate cards to a pack unless its a foil
-  // Add random foils
-  getRandomCard = (cards) => {
-    const randomCardIndex = _.random(0, cards.length - 1);
-
-    return cards[randomCardIndex];
-  }
-
-  isMythicRare = () => _.random(1, 8) === 1;
+  getSet = setAbbr => this.sets[setAbbr];
+  getRandomCard = cards => cards.get(Math.floor(Math.random() * Math.floor(cards.length)));
+  isMythicRare = () => Math.floor(Math.random() * Math.floor(7)) === 1;
 }
