@@ -65,8 +65,8 @@ export default class DraftRoomSetup extends React.Component {
         >
           {sets.valueSeq().map(set => (
             <MenuItem
-              key={set.get('abbr')}
-              value={set.get('abbr')}
+              key={set.get('code')}
+              value={set.get('code')}
               primaryText={set.get('name')}
             />
           ))}

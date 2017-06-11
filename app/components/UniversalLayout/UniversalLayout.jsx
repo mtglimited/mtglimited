@@ -18,6 +18,7 @@ const style = {
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  overflow: 'scroll',
   drawer: {
     header: {
       margin: 15,
@@ -67,9 +68,16 @@ export default class UniversalLayout extends React.Component {
       <MenuItem
         onTouchTap={() => {
           browserHistory.push('/');
-          this.props.dispatch(DrawerActions.setIsOpen(false));
+          this.props.dispatch(DrawerActions.close());
         }}
         primaryText="Lobby"
+      />
+      <MenuItem
+        onTouchTap={() => {
+          browserHistory.push('/sets');
+          this.props.dispatch(DrawerActions.close());
+        }}
+        primaryText="Sets"
       />
     </div>
   );
@@ -77,7 +85,7 @@ export default class UniversalLayout extends React.Component {
   openNavigationMenu = () => {
     const { dispatch } = this.props;
     dispatch(DrawerActions.setContent(this.navigationMenu));
-    dispatch(DrawerActions.setIsOpen(true));
+    dispatch(DrawerActions.open());
   }
 
   openProfilePopover = (event) => {
@@ -149,7 +157,9 @@ export default class UniversalLayout extends React.Component {
           </span>
         </AppBar>
         <Drawer />
-        {this.props.children}
+        <div style={{ margin: 15, flex: 1 }}>
+          {this.props.children}
+        </div>
       </div>
     );
   }

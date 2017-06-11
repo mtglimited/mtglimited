@@ -42,7 +42,7 @@ export default class Lobby extends React.Component {
     const { rooms } = this.props;
 
     return (
-      <div style={{ display: 'flex', flex: 1, flexDirection: 'column', margin: 15 }}>
+      <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
         <span style={{ display: 'flex' }}>
           <h2 style={{ flex: 1, margin: 0 }}>Lobby</h2>
           <RaisedButton

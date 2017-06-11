@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { firebaseConnect, populatedDataToJS, pathToJS } from 'react-redux-firebase';
 import Immutable, { fromJS } from 'immutable';
 import DraftRoomSetup from 'Components/DraftRoomSetup';
+import DraftLive from 'Containers/DraftLive';
 
 const roomPopulates = [
   { child: 'owner', root: 'users' },
@@ -13,8 +14,8 @@ const seatPopulates = [
   { child: 'owner', root: 'users' },
 ];
 
-const mapStateToProps = ({ firebase }, ownProps) => ({
-  room: fromJS(populatedDataToJS(firebase, `rooms/${ownProps.params.roomId}`, roomPopulates)),
+const mapStateToProps = ({ firebase }, { params }) => ({
+  room: fromJS(populatedDataToJS(firebase, `rooms/${params.roomId}`, roomPopulates)),
   seats: fromJS(populatedDataToJS(firebase, 'seats', seatPopulates)),
   sets: fromJS(populatedDataToJS(firebase, 'sets')),
   auth: pathToJS(firebase, 'auth'),
@@ -56,14 +57,15 @@ export default class DraftRoom extends React.Component {
     firebase.remove(`rooms/${params.roomId}/seats/${seat.get('roomSeatId')}`);
   }
 
-  startDraft = () => {
-    const { firebase, params } = this.props;
-    firebase.set(`rooms/${params.roomId}/isDraftStarted`, true);
-  }
-
-  chooseSet = (event, key, value) => {
-    const { firebase, params } = this.props;
-    firebase.set(`rooms/${params.roomId}/set`, value);
+  getBooster = (key, set) => {
+    console.log(set);
+    const { params } = this.props;
+    return {
+      seat: key,
+      room: params.roomId,
+      cards: [],
+      set,
+    };
   }
 
   joinDraft = (index) => {
@@ -89,9 +91,20 @@ export default class DraftRoom extends React.Component {
     firebase.set(`users/${userId}/seat`, roomSeatRef.key);
   }
 
-  startDraft = () => {
+  chooseSet = (event, key, value) => {
     const { firebase, params } = this.props;
+    firebase.set(`rooms/${params.roomId}/set`, value);
+  }
+
+  startDraft = () => {
+    const { firebase, params, seats, room } = this.props;
+    const set = room.get('set');
     firebase.push(`rooms/${params.roomId}/isLive`, true);
+
+    seats.map((seat, key) => {
+      const booster = this.getBooster(key, set);
+      return firebase.push('boosters', booster);
+    });
   }
 
   render() {
@@ -100,18 +113,25 @@ export default class DraftRoom extends React.Component {
       return null;
     }
 
+    const isLive = room.get('isLive');
+
     return (
-      <div style={{ margin: 15, display: 'flex', flexDirection: 'column' }}>
-        <DraftRoomSetup
-          room={room}
-          seats={seats}
-          sets={sets}
-          roomId={params.roomId}
-          firebase={firebase}
-          getUpFromSeat={this.getUpFromSeat}
-          joinDraft={this.joinDraft}
-          startDraft={this.startDraft}
-        />
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {!isLive &&
+          <DraftRoomSetup
+            room={room}
+            seats={seats}
+            sets={sets}
+            roomId={params.roomId}
+            firebase={firebase}
+            getUpFromSeat={this.getUpFromSeat}
+            joinDraft={this.joinDraft}
+            startDraft={this.startDraft}
+          />
+        }
+        {isLive &&
+          <DraftLive />
+        }
       </div>
     );
   }
