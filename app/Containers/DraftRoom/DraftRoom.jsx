@@ -110,6 +110,7 @@ export default class DraftRoom extends React.Component {
           firebase={firebase}
           getUpFromSeat={this.getUpFromSeat}
           joinDraft={this.joinDraft}
+          startDraft={this.startDraft}
         />
       </div>
     );

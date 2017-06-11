@@ -2,13 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
-import { browserHistory, Link } from 'react-router';
+import { browserHistory } from 'react-router';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
+import Popover from 'material-ui/Popover';
 
 import Drawer from 'Containers/Drawer';
 import * as DrawerActions from 'State/DrawerRedux';
@@ -40,6 +41,10 @@ export default class UniversalLayout extends React.Component {
     profile: null,
   };
 
+  state = {
+    profilePopoverIsOpen: false,
+  };
+
   signIn = async () => {
     const { firebase } = this.props;
     await firebase.login({
@@ -53,17 +58,19 @@ export default class UniversalLayout extends React.Component {
   }
 
   signOut = () => {
-    this.props.firebase.logout();
+    this.setState({ profilePopoverIsOpen: false }, this.props.firebase.logout);
   }
 
   navigationMenu = (
     <div>
       <h3 style={style.drawer.header}>Navigation</h3>
       <MenuItem
-        // eslint-disable-next-line jsx-a11y/anchor-has-content
-        containerElement={<Link to="/draft" />}
-        onTouchTap={() => this.props.dispatch(DrawerActions.setIsOpen(false))}
-      >Draft</MenuItem>
+        onTouchTap={() => {
+          browserHistory.push('/');
+          this.props.dispatch(DrawerActions.setIsOpen(false));
+        }}
+        primaryText="Lobby"
+      />
     </div>
   );
 
@@ -73,6 +80,19 @@ export default class UniversalLayout extends React.Component {
     dispatch(DrawerActions.setIsOpen(true));
   }
 
+  openProfilePopover = (event) => {
+    event.preventDefault();
+
+    this.setState({
+      profilePopoverIsOpen: true,
+      anchorEl: event.currentTarget,
+    });
+  };
+
+  closeProfilePopover = () => {
+    this.setState({ profilePopoverIsOpen: false });
+  }
+
   menuButton = (
     <IconButton onTouchTap={this.openNavigationMenu}>
       <MenuIcon />
@@ -80,13 +100,16 @@ export default class UniversalLayout extends React.Component {
   );
 
   render() {
-    const { profile, firebase } = this.props;
+    const { profile } = this.props;
+    const { profilePopoverIsOpen } = this.state;
+
     return (
       <div style={style}>
         <AppBar
           title="MTGLIMITED"
           onTitleTouchTap={() => browserHistory.push('/')}
           iconElementLeft={this.menuButton}
+          titleStyle={{ cursor: 'pointer' }}
         >
           <span style={{ margin: 'auto' }}>
             { !profile &&
@@ -97,13 +120,31 @@ export default class UniversalLayout extends React.Component {
             }
             { profile &&
               <span style={{ margin: 'auto' }}>
-                <Avatar src={profile.get('avatarUrl')} />
-                <span>{profile.get('displayName')}</span>
-                <FlatButton
-                  label="Sign Out"
-                  onTouchTap={() => firebase.logout()}
+                <Avatar
+                  src={profile.get('avatarUrl')}
+                  onTouchTap={this.openProfilePopover}
+                  style={{ cursor: 'pointer' }}
                 />
               </span>
+            }
+            { profilePopoverIsOpen &&
+              <Popover
+                open
+                anchorEl={this.state.anchorEl}
+                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+                canAutoPosition
+                onRequestClose={this.closeProfilePopover}
+
+              >
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span>{profile.get('displayName')}</span>
+                  <FlatButton
+                    label="Sign Out"
+                    onTouchTap={this.signOut}
+                  />
+                </div>
+              </Popover>
             }
           </span>
         </AppBar>

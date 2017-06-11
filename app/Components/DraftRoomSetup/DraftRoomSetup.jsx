@@ -22,6 +22,7 @@ export default class DraftRoomSetup extends React.Component {
     seats: ImmutablePropTypes.map.isRequired,
     getUpFromSeat: PropTypes.func.isRequired,
     joinDraft: PropTypes.func.isRequired,
+    startDraft: PropTypes.func.isRequired,
   };
 
   getSeatListItem = (index) => {
@@ -93,7 +94,7 @@ export default class DraftRoomSetup extends React.Component {
           label="Start Draft"
           style={{ display: 'flex' }}
           primary
-          onTouchTap={this.startDraft}
+          onTouchTap={this.props.startDraft}
           disabled={!seats || !(seats.count() === numberOfSeats)}
         />
       </div>
