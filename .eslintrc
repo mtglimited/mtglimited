@@ -36,12 +36,15 @@
     "import",
     "react"
   ],
+  "rules": {
+    "react/forbid-prop-types": ["off"],
+    "react/require-default-props": ["off"]
+  },
   "settings": {
     "import/resolver": {
       "webpack": {
         "config": "webpack.config.js"
       }
-    },
-    "react/forbid-prop-types": ["off"]
+    }
   }
 }
