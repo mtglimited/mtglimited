@@ -3,18 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firebaseConnect, populatedDataToJS, pathToJS } from 'react-redux-firebase';
 import Immutable, { fromJS } from 'immutable';
-import MenuItem from 'material-ui/MenuItem';
-import AccountCircle from 'material-ui/svg-icons/action/account-circle';
-import Clear from 'material-ui/svg-icons/content/clear';
-import { List, ListItem } from 'material-ui/List';
-import RaisedButton from 'material-ui/RaisedButton';
-import Avatar from 'material-ui/Avatar';
-import SelectField from 'material-ui/SelectField';
-import Title from 'Components/Title';
-
-const SEAT_COUNT = 8;
-
-const SEAT_COUNT_OPTIONS = Immutable.List([6, 8]);
+import DraftRoomSetup from 'Components/DraftRoomSetup';
 
 const roomPopulates = [
   { child: 'owner', root: 'users' },
@@ -42,7 +31,7 @@ const mapStateToProps = ({ firebase }, ownProps) => ({
 @connect(mapStateToProps)
 export default class DraftRoom extends React.Component {
   static propTypes = {
-    room: PropTypes.shape().isRequired,
+    room: PropTypes.shape(), // eslint-disable-line
     firebase: PropTypes.shape().isRequired,
     params: PropTypes.shape().isRequired,
     seats: PropTypes.shape(),
@@ -58,36 +47,13 @@ export default class DraftRoom extends React.Component {
   getUpFromSeat = (event, index) => {
     const { firebase, seats, params } = this.props;
     const seatKey = seats && seats.findKey(s => s.get('index') === index);
+    const seat = seats.find(s => s.get('index') === index);
     const userId = firebase.auth().currentUser.uid;
     event.stopPropagation();
+
     firebase.remove(`seats/${seatKey}`);
     firebase.remove(`users/${userId}/seat`);
-    firebase.remove(`rooms/${params.roomId}/seats/${seatKey}`);
-  }
-
-  getSeatListItem = (index) => {
-    const { seats } = this.props;
-    const seat = seats && seats.find(s => s.get('index') === index);
-
-    if (seat) {
-      const primaryText = `Seat ${index + 1}: ${seat.getIn(['owner', 'displayName'])}`;
-      return (
-        <ListItem
-          key={index}
-          primaryText={primaryText}
-          leftIcon={<Avatar src={seat.getIn(['owner', 'avatarUrl'])} />}
-          rightIcon={<Clear onTouchTap={event => this.getUpFromSeat(event, index)} />}
-        />
-      );
-    }
-    return (
-      <ListItem
-        key={index}
-        primaryText={`Seat ${index + 1} (open)`}
-        leftIcon={<AccountCircle />}
-        onTouchTap={() => this.joinDraft(index)}
-      />
-    );
+    firebase.remove(`rooms/${params.roomId}/seats/${seat.get('roomSeatId')}`);
   }
 
   startDraft = () => {
@@ -104,7 +70,6 @@ export default class DraftRoom extends React.Component {
     const { firebase, params, seats } = this.props;
     const userId = firebase.auth().currentUser.uid;
     if (seats) {
-      // eslint-disable-next-line
       const hasSeat = seats.find(seat => seat.getIn(['owner', 'uid']) === userId);
 
       if (hasSeat) {
@@ -118,7 +83,15 @@ export default class DraftRoom extends React.Component {
       index,
     });
     const roomSeatRef = firebase.push(`rooms/${params.roomId}/seats`, seatRef.key);
+    seatRef.update({
+      roomSeatId: roomSeatRef.key,
+    });
     firebase.set(`users/${userId}/seat`, roomSeatRef.key);
+  }
+
+  startDraft = () => {
+    const { firebase, params } = this.props;
+    firebase.push(`rooms/${params.roomId}/isLive`, true);
   }
 
   render() {
@@ -126,49 +99,17 @@ export default class DraftRoom extends React.Component {
     if (!room) {
       return null;
     }
+
     return (
       <div style={{ margin: 15, display: 'flex', flexDirection: 'column' }}>
-        <Title
-          name={room.get('name')}
-          setName={name => firebase.set(`rooms/${params.roomId}/name`, name)}
-        />
-        <SelectField
-          floatingLabelText="Set"
-          value={room.get('set')}
-          onChange={(event, key, value) => firebase.set(`rooms/${params.roomId}/set`, value)}
-        >
-          {sets.valueSeq().map(set => (
-            <MenuItem
-              key={set.get('abbr')}
-              value={set.get('abbr')}
-              primaryText={set.get('name')}
-            />
-          ))}
-        </SelectField>
-        <SelectField
-          floatingLabelText="Number of Players"
-          value={room.get('numberOfSeats', SEAT_COUNT_OPTIONS.get(0))}
-          onChange={(event, key, value) => firebase.set(`rooms/${params.roomId}/numberOfSeats`, value)}
-        >
-          {SEAT_COUNT_OPTIONS.map(number => (
-            <MenuItem
-              key={number}
-              value={number}
-              primaryText={number}
-            />
-          ))}
-        </SelectField>
-
-        {firebase.auth().currentUser &&
-          <List>
-            {Immutable.Range(0, room.get('numberOfSeats', SEAT_COUNT_OPTIONS.get(0))).map(index => this.getSeatListItem(index))}
-          </List>
-        }
-        <RaisedButton
-          label="Start Draft"
-          style={{ display: 'flex' }}
-          primary
-          disabled={!seats || !(seats.count() === SEAT_COUNT)}
+        <DraftRoomSetup
+          room={room}
+          seats={seats}
+          sets={sets}
+          roomId={params.roomId}
+          firebase={firebase}
+          getUpFromSeat={this.getUpFromSeat}
+          joinDraft={this.joinDraft}
         />
       </div>
     );
