@@ -1,3 +1,1 @@
-import Booster from './Booster';
-
-export default Booster;
+export default from './Booster';

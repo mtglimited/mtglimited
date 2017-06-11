@@ -1,20 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Radium from 'radium';
-import style from './Booster.style';
 
-const propTypes = {
-  pickCard: PropTypes.func.isRequired,
-  booster: PropTypes.shape({
-    set: PropTypes.string,
-    cards: PropTypes.array.isRequired,
-  }).isRequired,
+const style = {
+  booster: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  card: {
+    width: '223px',
+    ':hover': {
+      opacity: '0.9',
+      cursor: 'pointer',
+    },
+  },
 };
 
-
 @Radium
-/* eslint-disable react/prefer-stateless-function */
-class Booster extends React.Component {
+export default class Booster extends React.Component {
+  static propTypes = {
+    pickCard: PropTypes.func.isRequired,
+    booster: PropTypes.shape({
+      set: PropTypes.string,
+      cards: PropTypes.array.isRequired,
+    }).isRequired,
+  };
+
   render() {
     const { booster, pickCard } = this.props;
 
@@ -33,7 +45,3 @@ class Booster extends React.Component {
     );
   }
 }
-
-Booster.propTypes = propTypes;
-
-export default Booster;
