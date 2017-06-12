@@ -14,18 +14,6 @@ import Popover from 'material-ui/Popover';
 import Drawer from 'Containers/Drawer';
 import * as DrawerActions from 'State/DrawerRedux';
 
-const style = {
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  overflow: 'scroll',
-  drawer: {
-    header: {
-      margin: 15,
-    },
-  },
-};
-
 @firebaseConnect()
 @connect(state => ({
   profile: state.firebase.get('profile'),
@@ -64,7 +52,7 @@ export default class UniversalLayout extends React.Component {
 
   navigationMenu = (
     <div>
-      <h3 style={style.drawer.header}>Navigation</h3>
+      <h3 style={{ margin: 15 }}>Navigation</h3>
       <MenuItem
         onTouchTap={() => {
           browserHistory.push('/');
@@ -112,7 +100,7 @@ export default class UniversalLayout extends React.Component {
     const { profilePopoverIsOpen } = this.state;
 
     return (
-      <div style={style}>
+      <div style={{ flexDirection: 'column', overflow: 'scroll' }}>
         <AppBar
           title="MTGLIMITED"
           onTitleTouchTap={() => browserHistory.push('/')}
