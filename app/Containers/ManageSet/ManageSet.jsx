@@ -13,13 +13,14 @@ const mapStateToProps = ({ firebase }, { params }) => ({
 @connect(mapStateToProps)
 export default class ManageSet extends React.Component {
   static propTypes = {
-    set: PropTypes.shape().isRequired,
+    set: PropTypes.shape(),
     firebase: PropTypes.shape(),
     params: PropTypes.shape(),
   };
 
   hashSet = () => {
     const { firebase, set, params } = this.props;
+    firebase.remove(`/sets/${params.code}/hashedCards`);
     set.get('cards')
       .map(card => firebase.push(`/sets/${params.code}/hashedCards`, {
         ...card.toJS(),
