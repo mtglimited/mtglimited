@@ -22,9 +22,12 @@ export default class ManageSet extends React.Component {
     const { firebase, set, params } = this.props;
     firebase.remove(`/sets/${params.code}/hashedCards`);
     set.get('cards')
-      .map(card => firebase.push(`/sets/${params.code}/hashedCards`, {
-        ...card.toJS(),
-      }));
+      .map((card, index) => {
+        const hashedCardRef = firebase.push(`/sets/${params.code}/hashedCards`, {
+          ...card.toJS(),
+        });
+        return firebase.set(`/sets/${params.code}/cards/${index}/hash`, hashedCardRef.key);
+      });
   }
 
   render() {

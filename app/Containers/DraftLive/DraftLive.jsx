@@ -1,7 +1,21 @@
 import React from 'react';
+import FlatButton from 'material-ui/FlatButton';
 
-const DraftLive = () => (
-  <h1>Draft Live</h1>
-);
+export default class DraftLive extends React.Component {
+  static propTypes = {
 
-export default DraftLive;
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>Draft Live</h1>
+        <FlatButton
+          label="Generate a booster pack"
+          primary
+          onTouchTap={this.generateBooster}
+        />
+      </div>
+    );
+  }
+}
