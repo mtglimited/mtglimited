@@ -10,6 +10,7 @@ import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
 import Popover from 'material-ui/Popover';
+import { alternateTextColor } from 'Styles/colors';
 
 import Drawer from 'Containers/Drawer';
 import * as DrawerActions from 'State/DrawerRedux';
@@ -112,6 +113,7 @@ export default class UniversalLayout extends React.Component {
               <FlatButton
                 label="Sign In"
                 onTouchTap={this.signIn}
+                style={{ color: alternateTextColor }}
               />
             }
             { profile &&

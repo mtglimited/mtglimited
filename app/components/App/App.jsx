@@ -4,9 +4,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import UniversalLayout from 'Components/UniversalLayout';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-const muiTheme = getMuiTheme({
-  fontFamily: '"Lato", Helvetica, Arial, sans-serif',
-});
+import theme from 'Styles/theme';
+
+const muiTheme = getMuiTheme(theme);
 
 const propTypes = {
   children: PropTypes.element.isRequired,
@@ -15,7 +15,7 @@ const propTypes = {
 const App = ({ children }) => (
   <MuiThemeProvider muiTheme={muiTheme}>
     <UniversalLayout>
-      <div style={{ fontFamily: 'Lato, Helvetica, Arial, sans-serif', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontFamily: 'Roboto, sans-serif', flex: 1, display: 'flex', flexDirection: 'column' }}>
         { children }
       </div>
     </UniversalLayout>

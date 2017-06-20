@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { firebaseConnect, populatedDataToJS } from 'react-redux-firebase';
-import RaisedButton from 'material-ui/RaisedButton';
 import { browserHistory } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
+import MainCallToAction from 'Containers/MainCallToAction';
 
 const mapStateToProps = ({ firebase }) => ({
   rooms: Immutable.fromJS(populatedDataToJS(firebase, 'rooms')),
@@ -43,12 +43,9 @@ export default class Lobby extends React.Component {
 
     return (
       <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+        <MainCallToAction createRoom={this.createRoom} />
         <span style={{ display: 'flex' }}>
           <h2 style={{ flex: 1, margin: 0 }}>Lobby</h2>
-          <RaisedButton
-            label="Create new room"
-            onTouchTap={this.createRoom}
-          />
         </span>
         {rooms &&
           <List style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
