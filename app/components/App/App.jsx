@@ -4,7 +4,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import UniversalLayout from 'Components/UniversalLayout';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-const muiTheme = getMuiTheme();
+import theme from 'Styles/theme';
+
+const muiTheme = getMuiTheme(theme);
 
 const propTypes = {
   children: PropTypes.element.isRequired,
