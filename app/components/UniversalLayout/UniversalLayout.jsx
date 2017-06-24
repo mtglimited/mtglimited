@@ -100,7 +100,7 @@ export default class UniversalLayout extends React.Component {
     const { profilePopoverIsOpen } = this.state;
 
     return (
-      <div style={{ flexDirection: 'column', overflow: 'scroll' }}>
+      <div style={{ flexDirection: 'column', overflow: 'auto' }}>
         <AppBar
           title="MTGLIMITED"
           onTitleTouchTap={() => browserHistory.push('/')}
