@@ -100,7 +100,7 @@ export default class DraftRoom extends React.Component {
     const { firebase, params, seats, room } = this.props;
     const set = room.get('set');
     firebase.push(`rooms/${params.roomId}/isLive`, true);
-
+    console.log('seats', seats);
     seats.map((seat, key) => {
       const booster = this.getBooster(key, set);
       return firebase.push('boosters', booster);
@@ -130,7 +130,7 @@ export default class DraftRoom extends React.Component {
           />
         }
         {isLive &&
-          <DraftLive />
+          <DraftLive room={room} sets={sets} />
         }
       </div>
     );
