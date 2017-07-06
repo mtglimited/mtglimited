@@ -15,6 +15,7 @@ import { SEAT_COUNT_OPTIONS } from './constants';
 
 export default class DraftRoomSetup extends React.Component {
   static propTypes = {
+    auth: PropTypes.shape().isRequired,
     firebase: PropTypes.shape().isRequired,
     roomId: PropTypes.string.isRequired,
     room: ImmutablePropTypes.map.isRequired,
@@ -25,33 +26,39 @@ export default class DraftRoomSetup extends React.Component {
     startDraft: PropTypes.func.isRequired,
   };
 
-  getSeatListItem = (index) => {
-    const { seats, getUpFromSeat, joinDraft } = this.props;
-    const seat = seats && seats.find(s => s.get('index') === index);
-
-    if (seat) {
-      const primaryText = `Seat ${index + 1}: ${seat.getIn(['owner', 'displayName'])}`;
+  getSeatListItem = (seats, index) => {
+    const { getUpFromSeat, joinDraft } = this.props;
+    const seat = seats.find(s => s.get('index') === index);
+    if (!seat) {
       return (
         <ListItem
           key={index}
-          primaryText={primaryText}
-          leftIcon={<Avatar src={seat.getIn(['owner', 'avatarUrl'])} />}
-          rightIcon={<Clear onTouchTap={event => getUpFromSeat(event, index)} />}
+          primaryText={`Seat ${index + 1} (open)`}
+          leftIcon={<AccountCircle />}
+          onTouchTap={() => joinDraft(index)}
         />
       );
     }
+
+    let owner = seat.get('owner');
+    if (typeof owner === 'string') {
+      owner = Immutable.fromJS({});
+    }
+    const primaryText = `Seat ${index + 1}: ${owner.get('displayName')}`;
     return (
       <ListItem
         key={index}
-        primaryText={`Seat ${index + 1} (open)`}
-        leftIcon={<AccountCircle />}
-        onTouchTap={() => joinDraft(index)}
+        primaryText={primaryText}
+        leftIcon={<Avatar src={owner.get('avatarUrl')} />}
+        rightIcon={<Clear onTouchTap={event => getUpFromSeat(event, index)} />}
       />
     );
   }
+
   render() {
-    const { firebase, roomId, room, sets, seats } = this.props;
-    const numberOfSeats = room.get('numberOfSeats', SEAT_COUNT_OPTIONS.get(0));
+    const { firebase, roomId, room, auth, startDraft, seats, sets } = this.props;
+    const numberOfSeats = room.numberOfSeats || SEAT_COUNT_OPTIONS.get(0);
+
     return (
       <div>
         <Title
@@ -85,16 +92,16 @@ export default class DraftRoomSetup extends React.Component {
           ))}
         </SelectField>
 
-        {firebase.auth().currentUser &&
+        {!auth.isEmpty &&
           <List>
-            {Immutable.Range(0, numberOfSeats).map(index => this.getSeatListItem(index))}
+            {Immutable.Range(0, numberOfSeats).map(index => this.getSeatListItem(seats, index))}
           </List>
         }
         <RaisedButton
           label="Start Draft"
           style={{ display: 'flex' }}
           primary
-          onTouchTap={this.props.startDraft}
+          onTouchTap={startDraft}
           disabled={!seats || !(seats.count() === numberOfSeats)}
         />
       </div>

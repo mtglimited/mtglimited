@@ -1,27 +1,18 @@
 import React from 'react';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import { firebaseConnect, populatedDataToJS } from 'react-redux-firebase';
+import { firebaseConnect } from 'react-redux-firebase';
 import RaisedButton from 'material-ui/RaisedButton';
 import { browserHistory } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 
-const mapStateToProps = ({ firebase }) => ({
-  rooms: Immutable.fromJS(populatedDataToJS(firebase, 'rooms')),
-});
-
 @firebaseConnect(['rooms'])
-@connect(mapStateToProps)
+@connect(({ firebase: { data: { rooms } } }) => ({ rooms }))
 export default class Lobby extends React.Component {
   static propTypes = {
-    rooms: ImmutablePropTypes.map.isRequired,
+    rooms: PropTypes.object,
     firebase: PropTypes.shape().isRequired,
-  };
-
-  static defaultProps = {
-    rooms: Immutable.Map(),
   };
 
   createRoom = async () => {
@@ -39,7 +30,7 @@ export default class Lobby extends React.Component {
   }
 
   render() {
-    const { rooms } = this.props;
+    const rooms = fromJS(this.props.rooms || {});
 
     return (
       <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>

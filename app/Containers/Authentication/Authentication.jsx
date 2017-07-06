@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { firebaseConnect, pathToJS } from 'react-redux-firebase';
+import { firebaseConnect } from 'react-redux-firebase';
 import { browserHistory } from 'react-router';
 import CircularProgress from 'material-ui/CircularProgress';
 
@@ -13,9 +13,7 @@ const style = {
 };
 
 @firebaseConnect()
-@connect(({ firebase }) => ({
-  auth: pathToJS(firebase, 'auth'),
-}))
+@connect(({ firebase: { auth } }) => ({ auth }))
 export default class Authentication extends React.Component {
   static propTypes = {
     auth: PropTypes.shape(),

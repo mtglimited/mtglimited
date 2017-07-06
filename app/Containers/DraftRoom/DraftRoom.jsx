@@ -1,55 +1,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
-import { firebaseConnect, populatedDataToJS, pathToJS } from 'react-redux-firebase';
-import Immutable, { fromJS } from 'immutable';
+import { firebaseConnect, populate } from 'react-redux-firebase';
 import DraftRoomSetup from 'Components/DraftRoomSetup';
 import DraftLive from 'Containers/DraftLive';
 
-const roomPopulates = [
+const populates = [
   { child: 'owner', root: 'users' },
 ];
-
-const seatPopulates = [
-  { child: 'owner', root: 'users' },
-];
-
-const mapStateToProps = ({ firebase }, { params }) => ({
-  room: fromJS(populatedDataToJS(firebase, `rooms/${params.roomId}`, roomPopulates)),
-  seats: fromJS(populatedDataToJS(firebase, 'seats', seatPopulates)),
-  sets: fromJS(populatedDataToJS(firebase, 'sets')),
-  auth: pathToJS(firebase, 'auth'),
-});
 
 @firebaseConnect(ownProps => [
-  {
-    path: `rooms/${ownProps.params.roomId}`,
-    populates: roomPopulates,
-  },
-  '/sets',
-  `seats#orderByChild=room&equalTo=${ownProps.params.roomId}`,
+  `rooms/${ownProps.params.roomId}`,
+  'sets',
+  `seats#populate=owner:users&orderByChild=room&equalTo=${ownProps.params.roomId}`,
 ])
-@connect(mapStateToProps)
+@connect(({ firebase }, { params }) => ({
+  room: firebase.data.rooms && fromJS(firebase.data.rooms[params.roomId]),
+  seats: fromJS(populate(firebase, 'seats', populates)),
+  sets: fromJS(firebase.data.sets),
+  auth: firebase.auth,
+}))
 export default class DraftRoom extends React.Component {
   static propTypes = {
-    room: PropTypes.shape(), // eslint-disable-line
+    room: PropTypes.shape(),
     firebase: PropTypes.shape().isRequired,
     params: PropTypes.shape().isRequired,
     seats: PropTypes.shape(),
     sets: PropTypes.shape(),
+    auth: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
-    profile: Immutable.Map(),
-    sets: Immutable.Map(),
-    seats: Immutable.Map(),
+    sets: fromJS({}),
+    seats: fromJS({}),
   };
 
   getUpFromSeat = (event, index) => {
-    const { firebase, seats, params } = this.props;
+    const { firebase, seats, params, auth } = this.props;
     const seatKey = seats && seats.findKey(s => s.get('index') === index);
     const seat = seats.find(s => s.get('index') === index);
-    const userId = firebase.auth().currentUser.uid;
+    const userId = auth.uid;
     event.stopPropagation();
 
     firebase.remove(`seats/${seatKey}`);
@@ -58,7 +49,6 @@ export default class DraftRoom extends React.Component {
   }
 
   getBooster = (key, set) => {
-    console.log(set);
     const { params } = this.props;
     return {
       seat: key,
@@ -69,8 +59,8 @@ export default class DraftRoom extends React.Component {
   }
 
   joinDraft = (index) => {
-    const { firebase, params, seats } = this.props;
-    const userId = firebase.auth().currentUser.uid;
+    const { firebase, params, seats, auth } = this.props;
+    const userId = auth.uid;
     if (seats) {
       const hasSeat = seats.find(seat => seat.getIn(['owner', 'uid']) === userId);
 
@@ -98,27 +88,25 @@ export default class DraftRoom extends React.Component {
 
   startDraft = () => {
     const { firebase, params, seats, room } = this.props;
-    const set = room.get('set');
+    const set = room.set;
     firebase.set(`rooms/${params.roomId}/isLive`, true);
 
-    seats.map((seat, key) => {
-      const booster = this.getBooster(key, set);
-      return firebase.push('boosters', booster);
-    });
+    seats.map((seat, key) => firebase.push('boosters', this.getBooster(key, set)));
   }
 
   render() {
-    const { room, params, sets, firebase, seats } = this.props;
-    if (!room) {
+    if (!this.props.room) {
       return null;
     }
 
+    const { params, firebase, auth, sets, seats, room } = this.props;
     const isLive = room.get('isLive');
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {!isLive &&
           <DraftRoomSetup
+            auth={auth}
             room={room}
             seats={seats}
             sets={sets}
@@ -131,10 +119,12 @@ export default class DraftRoom extends React.Component {
         }
         {isLive &&
           <DraftLive
-            room={room}
+            selectedSet={room.get('set')}
             seats={seats}
             roomId={params.roomId}
+            sets={sets}
             firebase={firebase}
+            auth={auth}
           />
         }
       </div>
