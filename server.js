@@ -9,6 +9,7 @@ new WebpackDevServer(webpack(config), {
   quiet: false,
   noInfo: false,
   https: true,
+  headers: { 'Access-Control-Allow-Origin': '*' },
   stats: {
     assets: false,
     colors: true,
