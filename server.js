@@ -18,10 +18,10 @@ new WebpackDevServer(webpack(config), {
     chunks: false,
     chunkModules: false
   }
-}).listen(3003, 'localhost', function(err) {
+}).listen(3010, 'localhost', function(err) {
   if (err) {
     console.log(err);
   }
 
-  console.log('Listening at https://localhost:3003');
+  console.log('Listening at https://localhost:3010');
 });
