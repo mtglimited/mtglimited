@@ -32,7 +32,7 @@ const populates = [
 export default class Booster extends React.Component {
   static propTypes = {
     pickCard: PropTypes.func.isRequired,
-    booster: PropTypes.shape().isRequired,
+    booster: PropTypes.shape(),
     set: PropTypes.shape().isRequired,
     boosterId: PropTypes.string.isRequired,
   };
