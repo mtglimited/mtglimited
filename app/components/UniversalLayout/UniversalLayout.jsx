@@ -10,20 +10,19 @@ import MenuItem from 'material-ui/MenuItem';
 import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
 import Popover from 'material-ui/Popover';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import Drawer from 'Containers/Drawer';
 import * as DrawerActions from 'State/DrawerRedux';
 
 @firebaseConnect()
-@connect(state => ({
-  profile: state.firebase.get('profile'),
-}))
+@connect(({ firebase: { auth } }) => ({ auth }))
 export default class UniversalLayout extends React.Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
     dispatch: PropTypes.func.isRequired,
     firebase: PropTypes.shape().isRequired,
-    profile: PropTypes.shape(),
+    auth: PropTypes.shape(),
   };
 
   static defaultProps = {
@@ -96,7 +95,7 @@ export default class UniversalLayout extends React.Component {
   );
 
   render() {
-    const { profile } = this.props;
+    const { auth } = this.props;
     const { profilePopoverIsOpen } = this.state;
 
     return (
@@ -108,16 +107,19 @@ export default class UniversalLayout extends React.Component {
           titleStyle={{ cursor: 'pointer' }}
         >
           <span style={{ margin: 'auto' }}>
-            { !profile &&
+            { !auth.isLoaded &&
+              <CircularProgress />
+            }
+            { auth.isEmpty &&
               <FlatButton
                 label="Sign In"
                 onTouchTap={this.signIn}
               />
             }
-            { profile &&
+            { !auth.isEmpty &&
               <span style={{ margin: 'auto' }}>
                 <Avatar
-                  src={profile.get('avatarUrl')}
+                  src={auth.photoURL}
                   onTouchTap={this.openProfilePopover}
                   style={{ cursor: 'pointer' }}
                 />
@@ -134,7 +136,7 @@ export default class UniversalLayout extends React.Component {
 
               >
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span>{profile.get('displayName')}</span>
+                  <span>{auth.displayName}</span>
                   <FlatButton
                     label="Sign Out"
                     onTouchTap={this.signOut}

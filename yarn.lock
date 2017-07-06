@@ -1876,10 +1876,6 @@ es6-map@^0.1.3:
     es6-symbol "~3.1.1"
     event-emitter "~0.3.5"
 
-es6-promise@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.1.0.tgz#dda03ca8f9f89bc597e689842929de7ba8cebdf0"
-
 es6-set@~0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/es6-set/-/es6-set-0.1.5.tgz#d2b3ec5d4d800ced818db538d28974db0a73ccb1"
@@ -2338,9 +2334,9 @@ findup@0.1.5:
     colors "~0.6.0-1"
     commander "~2.1.0"
 
-firebase@^3.9.0:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/firebase/-/firebase-3.9.0.tgz#c4237f50f58eeb25081b1839d6cbf175f8f7ed9b"
+firebase@^4.1.3:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/firebase/-/firebase-4.1.3.tgz#e5d7327366c854dc12461633ba8bfeea2f5c7358"
   dependencies:
     dom-storage "^2.0.2"
     faye-websocket "0.9.3"
@@ -4510,14 +4506,11 @@ react-pure-render@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/react-pure-render/-/react-pure-render-1.0.2.tgz#9d8a928c7f2c37513c2d064e57b3e3c356e9fabb"
 
-react-redux-firebase@^1.5.0-beta:
-  version "1.5.0-beta"
-  resolved "https://registry.yarnpkg.com/react-redux-firebase/-/react-redux-firebase-1.5.0-beta.tgz#cca139de1022c1e203ae6078b48a7cbf3c701931"
+react-redux-firebase@v2.0.0-beta:
+  version "2.0.0-beta"
+  resolved "https://registry.yarnpkg.com/react-redux-firebase/-/react-redux-firebase-2.0.0-beta.tgz#1458643c8ce72ca0d26c4b380a0aabc543b407e1"
   dependencies:
-    es6-promise "^4.1.0"
-    firebase "^3.9.0"
     hoist-non-react-statics "^1.2.0"
-    immutable "^3.8.1"
     jwt-decode "^2.2.0"
     lodash "^4.17.4"
     prop-types "^15.5.8"
