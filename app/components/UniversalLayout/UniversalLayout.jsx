@@ -35,14 +35,12 @@ export default class UniversalLayout extends React.Component {
 
   signIn = async () => {
     const { firebase } = this.props;
-    await firebase.login({
+    const auth = await firebase.login({
       provider: 'google',
       type: 'popup',
     });
-
-    // TODO: Remove this when there is a better way to get user id
-    const user = firebase.auth().currentUser;
-    firebase.set(`users/${user.uid}/uid`, firebase.auth().currentUser.uid);
+    const { uid } = auth.user;
+    await firebase.set(`users/${uid}/uid`, uid);
   }
 
   signOut = () => {

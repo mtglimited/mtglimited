@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { reactReduxFirebase } from 'react-redux-firebase';
+import { reactReduxFirebase, getFirebase } from 'react-redux-firebase';
 import * as firebase from 'firebase';
 import thunk from 'redux-thunk';
 import DevTools from 'Containers/DevTools';
@@ -14,7 +14,7 @@ const config = {
 
 export default (rootReducer) => {
   const middleware = [
-    thunk.withExtraArgument(firebase),
+    thunk.withExtraArgument(getFirebase),
   ];
   const enhancers = [
     reactReduxFirebase(firebase, config),

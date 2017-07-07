@@ -8,16 +8,17 @@ import { browserHistory } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 
 @firebaseConnect(['rooms'])
-@connect(({ firebase: { data: { rooms } } }) => ({ rooms }))
+@connect(({ firebase: { auth, data: { rooms } } }) => ({ auth, rooms }))
 export default class Lobby extends React.Component {
   static propTypes = {
     rooms: PropTypes.object,
     firebase: PropTypes.shape().isRequired,
+    auth: PropTypes.shape().isRequired,
   };
 
   createRoom = async () => {
-    const { firebase } = this.props;
-    const owner = firebase.auth().currentUser.uid;
+    const { firebase, auth } = this.props;
+    const owner = auth.uid;
     const name = 'New Draft Room';
     const ref = firebase.push('rooms', {
       owner,
@@ -30,16 +31,19 @@ export default class Lobby extends React.Component {
   }
 
   render() {
+    const { auth } = this.props;
     const rooms = fromJS(this.props.rooms || {});
 
     return (
       <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
         <span style={{ display: 'flex' }}>
           <h2 style={{ flex: 1, margin: 0 }}>Lobby</h2>
-          <RaisedButton
-            label="Create new room"
-            onTouchTap={this.createRoom}
-          />
+          {!auth.isEmpty &&
+            <RaisedButton
+              label="Create new room"
+              onTouchTap={this.createRoom}
+            />
+          }
         </span>
         {rooms &&
           <List style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>

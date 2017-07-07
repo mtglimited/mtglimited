@@ -78,7 +78,6 @@ export default class DraftRoom extends React.Component {
     seatRef.update({
       roomSeatId: roomSeatRef.key,
     });
-    firebase.set(`users/${userId}/seat`, roomSeatRef.key);
   }
 
   chooseSet = (event, key, value) => {
@@ -87,11 +86,11 @@ export default class DraftRoom extends React.Component {
   }
 
   startDraft = () => {
-    const { firebase, params, seats, room } = this.props;
-    const set = room.set;
+    const { firebase, params } = this.props;
     firebase.set(`rooms/${params.roomId}/isLive`, true);
-
-    seats.map((seat, key) => firebase.push('boosters', this.getBooster(key, set)));
+    // TODO: create collections for each seat?
+    // TODO: maybe just let them generate a pack?
+    // seats.map((seat, key) => firebase.push('boosters', this.getBooster(key, set)));
   }
 
   render() {

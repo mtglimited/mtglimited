@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import Booster from 'Containers/Booster';
 
 export default class DraftLive extends React.Component {
   static propTypes = {
     selectedSet: PropTypes.string,
-    roomId: PropTypes.string,
     seats: PropTypes.shape(),
     firebase: PropTypes.shape(),
     sets: PropTypes.shape(),
@@ -22,7 +21,7 @@ export default class DraftLive extends React.Component {
     const set = sets.get(selectedSet);
     const cardsByRarity = set.get('hashedCards').groupBy(card => card.get('rarity').toLowerCase());
     const owner = auth.uid;
-
+    const seatId = seats.findKey(seat => seat.getIn(['owner', 'uid']) === owner);
     const cards = set
       .get('booster')
       .filterNot(rarity => rarity === 'land' || rarity === 'marketing')
@@ -48,22 +47,37 @@ export default class DraftLive extends React.Component {
       cards,
       owner,
       roomId,
+      seatId,
       set: selectedSet,
     };
 
     const boosterRef = await firebase.push('boosters', booster);
-    const seatId = seats.findKey(seat => seat.getIn(['owner', 'uid']) === owner);
     firebase.set(`/seats/${seatId}/activeBooster`, boosterRef.key);
   }
 
-  pickCard = (boosterId, index, cardId) => {
-    const { firebase, seats, auth } = this.props;
-    const owner = auth.uid;
-    const seatId = seats.findKey(seat => seat.getIn(['owner', 'uid']) === owner);
-    firebase.set(`boosters/${boosterId}/cards/${index}/isPicked`, true);
-    firebase.push(`seats/${seatId}/collection`, {
-      data: cardId,
-    });
+  pickCard = async (boosterId, index, data) => {
+    const { selectedSet, firebase, seats, auth: { uid } } = this.props;
+    const seatId = seats.findKey(seat => seat.getIn(['owner', 'uid']) === uid);
+    const seat = seats.get(seatId);
+    const pickIndex = seat.get('pickIndex', 0);
+    const card = {
+      pickIndex,
+      data,
+      selectedSet,
+    };
+    await firebase.set(`boosters/${boosterId}/cards/${index}/pickIndex`, pickIndex);
+    await firebase.set(`boosters/${boosterId}/cards/${index}/owner`, uid);
+    let collection = seat.get('collection');
+
+    if (!collection) {
+      const collectionRef = await firebase.push('collections', {
+        owner: uid,
+      });
+      collection = collectionRef.key;
+      await firebase.set(`seats/${seatId}/collection`, collection);
+    }
+    await firebase.push(`collections/${collection}/cards`, card);
+    await firebase.set(`seats/${seatId}/pickIndex`, pickIndex + 1);
   }
 
   render() {
@@ -78,12 +92,12 @@ export default class DraftLive extends React.Component {
     return (
       <div>
         <h1>Draft Live</h1>
-        <FlatButton
+        <RaisedButton
           label="Generate a booster pack"
-          primary
+          secondary
           onTouchTap={() => this.createBooster()}
         />
-        {seat.get('activeBooster') &&
+        {seat.getIn(['boosterQueue', 0]) &&
           <Booster
             boosterId={seat.get('activeBooster')}
             set={setData}
