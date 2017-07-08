@@ -2,25 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
-import { browserHistory } from 'react-router';
-import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui/svg-icons/navigation/menu';
-import MenuItem from 'material-ui/MenuItem';
-import FlatButton from 'material-ui/FlatButton';
-import Avatar from 'material-ui/Avatar';
-import Popover from 'material-ui/Popover';
-import CircularProgress from 'material-ui/CircularProgress';
 
-import Drawer from 'Containers/Drawer';
-import * as DrawerActions from 'State/DrawerRedux';
+import App from 'grommet/components/App';
+import Article from 'grommet/components/Article';
+import Header from 'grommet/components/Header';
+import Section from 'grommet/components/Section';
+import Title from 'grommet/components/Title';
+import Image from 'grommet/components/Image';
+import Box from 'grommet/components/Box';
+import Button from 'grommet/components/Button';
+import Footer from 'grommet/components/Footer';
+import Paragraph from 'grommet/components/Paragraph';
+import Menu from 'grommet/components/Menu';
+import Anchor from 'grommet/components/Anchor';
 
 @firebaseConnect()
 @connect(({ firebase: { auth } }) => ({ auth }))
 export default class UniversalLayout extends React.Component {
   static propTypes = {
     children: PropTypes.element.isRequired,
-    dispatch: PropTypes.func.isRequired,
     firebase: PropTypes.shape().isRequired,
     auth: PropTypes.shape(),
   };
@@ -47,108 +47,82 @@ export default class UniversalLayout extends React.Component {
     this.setState({ profilePopoverIsOpen: false }, this.props.firebase.logout);
   }
 
-  navigationMenu = (
-    <div>
-      <h3 style={{ margin: 15 }}>Navigation</h3>
-      <MenuItem
-        onTouchTap={() => {
-          browserHistory.push('/');
-          this.props.dispatch(DrawerActions.close());
-        }}
-        primaryText="Lobby"
-      />
-      <MenuItem
-        onTouchTap={() => {
-          browserHistory.push('/sets');
-          this.props.dispatch(DrawerActions.close());
-        }}
-        primaryText="Sets"
-      />
-    </div>
-  );
-
-  openNavigationMenu = () => {
-    const { dispatch } = this.props;
-    dispatch(DrawerActions.setContent(this.navigationMenu));
-    dispatch(DrawerActions.open());
-  }
-
-  openProfilePopover = (event) => {
-    event.preventDefault();
-
-    this.setState({
-      profilePopoverIsOpen: true,
-      anchorEl: event.currentTarget,
-    });
-  };
-
-  closeProfilePopover = () => {
-    this.setState({ profilePopoverIsOpen: false });
-  }
-
-  menuButton = (
-    <IconButton onTouchTap={this.openNavigationMenu}>
-      <MenuIcon />
-    </IconButton>
-  );
-
   render() {
     const { auth } = this.props;
-    const { profilePopoverIsOpen } = this.state;
 
     return (
-      <div style={{ flexDirection: 'column', overflow: 'auto' }}>
-        <AppBar
-          title="MTGLIMITED"
-          onTitleTouchTap={() => browserHistory.push('/')}
-          iconElementLeft={this.menuButton}
-          titleStyle={{ cursor: 'pointer' }}
-        >
-          <span style={{ margin: 'auto' }}>
-            { !auth.isLoaded &&
-              <CircularProgress />
-            }
-            { auth.isEmpty &&
-              <FlatButton
-                label="Sign In"
-                onTouchTap={this.signIn}
-              />
-            }
-            { !auth.isEmpty &&
-              <span style={{ margin: 'auto' }}>
-                <Avatar
-                  src={auth.photoURL}
-                  onTouchTap={this.openProfilePopover}
-                  style={{ cursor: 'pointer' }}
+      <App>
+        <Article full>
+          <Header
+            justify="between"
+            pad="small"
+          >
+            <Title path="/">
+              MTG LIMITED
+            </Title>
+            <Menu direction="row">
+              <Anchor path="/">
+                Home
+              </Anchor>
+              <Anchor path="/sets">
+                Sets
+              </Anchor>
+            </Menu>
+            <Box flex justify="end" direction="row">
+              { auth.isEmpty &&
+                <Button
+                  label="Sign In"
+                  onClick={this.signIn}
+                  href="#"
+                  primary
                 />
-              </span>
-            }
-            { profilePopoverIsOpen &&
-              <Popover
-                open
-                anchorEl={this.state.anchorEl}
-                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-                canAutoPosition
-                onRequestClose={this.closeProfilePopover}
-
-              >
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span>{auth.displayName}</span>
-                  <FlatButton
-                    label="Sign Out"
-                    onTouchTap={this.signOut}
-                  />
-                </div>
-              </Popover>
-            }
-          </span>
-        </AppBar>
-        <Drawer />
-        <div style={{ margin: 15, flex: 1 }}>
-          {this.props.children}
-        </div>
-      </div>
+              }
+              { !auth.isEmpty &&
+                <Menu
+                  responsive
+                  dropAlign={{
+                    right: 'right',
+                    top: 'top',
+                  }}
+                  icon={
+                    <Image
+                      src={auth.photoURL}
+                      size="thumb"
+                      style={{ borderRadius: 12 }}
+                    />
+                  }
+                >
+                  <Box pad="small">
+                    {auth.email}
+                  </Box>
+                  <Anchor href="#" onClick={this.signOut}>
+                    Sign Out
+                  </Anchor>
+                </Menu>
+              }
+            </Box>
+          </Header>
+          <Section primary flex>
+            {this.props.children}
+          </Section>
+          <Footer
+            pad="small"
+            justify="between"
+            align="end"
+            primary
+          >
+            <Box
+              direction="row"
+              align="center"
+              pad={{ between: 'medium' }}
+            >
+              <Paragraph margin="none">
+                © 2017 MTGLIMITED
+              </Paragraph>
+            </Box>
+          </Footer>
+        </Article>
+      </App>
     );
   }
 }
