@@ -52,7 +52,7 @@ export default class DraftRoomSetup extends React.Component {
 
   render() {
     const { firebase, roomId, room, auth, startDraft, seats, sets } = this.props;
-    const numberOfSeats = room.numberOfSeats || SEAT_COUNT_OPTIONS.get(0);
+    const numberOfSeats = room.get('numberOfSeats') || SEAT_COUNT_OPTIONS.get(0);
 
     return (
       <div>
