@@ -26,25 +26,20 @@ export default class DraftRoomSetup extends React.Component {
     startDraft: PropTypes.func.isRequired,
   };
 
-  getSeatListItem = (seats, index) => {
-    const { getUpFromSeat, joinDraft } = this.props;
-    const seat = seats.find(s => s.get('index') === index);
-    if (!seat) {
-      return (
-        <ListItem
-          key={index}
-          primaryText={`Seat ${index + 1} (open)`}
-          leftIcon={<AccountCircle />}
-          onTouchTap={() => joinDraft(index)}
-        />
-      );
-    }
+  getEmptySeat = index => (
+    <ListItem
+      key={index}
+      primaryText={`Seat ${index + 1} (open)`}
+      leftIcon={<AccountCircle />}
+      onTouchTap={() => this.props.joinDraft(index)}
+    />
+  );
 
-    let owner = seat.get('owner');
-    if (typeof owner === 'string') {
-      owner = Immutable.fromJS({});
-    }
+  getSeatWithUser = (seat, index) => {
+    const { getUpFromSeat } = this.props;
+    const owner = seat.get('owner');
     const primaryText = `Seat ${index + 1}: ${owner.get('displayName')}`;
+
     return (
       <ListItem
         key={index}
@@ -94,7 +89,14 @@ export default class DraftRoomSetup extends React.Component {
 
         {!auth.isEmpty &&
           <List>
-            {Immutable.Range(0, numberOfSeats).map(index => this.getSeatListItem(seats, index))}
+            {Immutable.Range(0, numberOfSeats).map((index) => {
+              const seat = seats.get(String(index));
+              if (!seat) {
+                return this.getEmptySeat(index);
+              }
+
+              return this.getSeatWithUser(seat, index);
+            })}
           </List>
         }
         <RaisedButton
