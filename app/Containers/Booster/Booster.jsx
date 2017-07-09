@@ -20,14 +20,10 @@ const style = {
   },
 };
 
-const populates = [
-  { child: 'owner', root: 'users' },
-];
-
 @Radium
 @firebaseConnect(({ boosterId }) => [`boosters/${boosterId}`])
 @connect(({ firebase }, ownProps) => ({
-  booster: fromJS(populate(firebase, `boosters/${ownProps.boosterId}`, populates)),
+  booster: fromJS(populate(firebase, `boosters/${ownProps.boosterId}`)),
 }))
 export default class Booster extends React.Component {
   static propTypes = {
@@ -41,7 +37,7 @@ export default class Booster extends React.Component {
     `https://storage.googleapis.com/mtglimited-154323.appspot.com/cards/${set}/${imageName}.jpeg`;
 
   render() {
-    const { booster, pickCard, set, boosterId } = this.props;
+    const { pickCard, set, boosterId, booster } = this.props;
     if (!booster) {
       return null;
     }
@@ -56,7 +52,7 @@ export default class Booster extends React.Component {
               style={style.card}
               src={this.getCardImageUrl(booster.get('set'), cardData.get('imageName'))}
               key={index} // eslint-disable-line
-              onTouchTap={() => pickCard(boosterId, index, card.get('data'))}
+              onTouchTap={() => pickCard(boosterId, index, card.get('data'), booster.get('set'))}
             />
           );
         })}
