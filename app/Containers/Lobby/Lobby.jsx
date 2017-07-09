@@ -12,6 +12,8 @@ import Heading from 'grommet/components/Heading';
 import Section from 'grommet/components/Section';
 import Box from 'grommet/components/Box';
 
+const DEFAULT_SET = 'HOU';
+
 @firebaseConnect(['rooms'])
 @connect(({ firebase: { auth, data: { rooms } } }) => ({ auth, rooms }))
 export default class Lobby extends React.Component {
@@ -21,15 +23,17 @@ export default class Lobby extends React.Component {
     auth: PropTypes.shape().isRequired,
   };
 
+  getName = () => Math.random().toString(36).substr(7).toUpperCase();
+
   createRoom = async () => {
     const { firebase, auth } = this.props;
     const owner = auth.uid;
-    const name = 'New Draft Room';
+    const name = this.getName();
     const ref = firebase.push('rooms', {
       owner,
       name,
       seats: false,
-      set: false,
+      set: DEFAULT_SET,
     });
 
     browserHistory.push(`/rooms/${ref.key}`);
@@ -53,7 +57,6 @@ export default class Lobby extends React.Component {
                 primary
                 label="Create New Room"
                 onClick={this.createRoom}
-                href="#"
               />
             </Box>
           }

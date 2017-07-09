@@ -36,17 +36,11 @@ export default class DraftRoom extends React.Component {
     seats: fromJS({}),
   };
 
-  getUpFromSeat = (event, index) => {
-    const { firebase, seats, params, auth } = this.props;
-    const seatKey = seats && seats.findKey(s => s.get('index') === index);
-    const seat = seats.find(s => s.get('index') === index);
-    const userId = auth.uid;
-    event.stopPropagation();
+  getSeat = () => this.props.seats
+    .find(s => s.get('uid') === this.props.auth.uid);
 
-    firebase.remove(`seats/${seatKey}`);
-    firebase.remove(`users/${userId}/seat`);
-    firebase.remove(`rooms/${params.roomId}/seats/${seat.get('roomSeatId')}`);
-  }
+  getSeatKey = () => this.props.seats
+      .findKey(s => s.get('uid') === this.props.auth.uid);
 
   getBooster = (key, set) => {
     const { params } = this.props;
@@ -57,6 +51,18 @@ export default class DraftRoom extends React.Component {
       set,
     };
   }
+
+  leaveDraft = () => {
+    const { firebase, params, auth } = this.props;
+    const seatKey = this.getSeatKey();
+    const seat = this.getSeat();
+    const userId = auth.uid;
+
+    firebase.remove(`seats/${seatKey}`);
+    firebase.remove(`users/${userId}/seat`);
+    firebase.remove(`rooms/${params.roomId}/seats/${seat.get('roomSeatId')}`);
+  }
+
 
   joinDraft = (index) => {
     const { firebase, params, seats, auth } = this.props;
@@ -71,8 +77,8 @@ export default class DraftRoom extends React.Component {
     const seatRef = firebase.push('seats', {
       owner: userId,
       room: params.roomId,
-      index,
     });
+
     firebase.set(`rooms/${roomId}/seats/${index}`, seatRef.key);
   }
 
@@ -107,7 +113,7 @@ export default class DraftRoom extends React.Component {
             sets={sets}
             roomId={params.roomId}
             firebase={firebase}
-            getUpFromSeat={this.getUpFromSeat}
+            leaveDraft={this.leaftDraft}
             joinDraft={this.joinDraft}
             startDraft={this.startDraft}
           />
