@@ -3,9 +3,14 @@ import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { firebaseConnect } from 'react-redux-firebase';
-import RaisedButton from 'material-ui/RaisedButton';
 import { browserHistory } from 'react-router';
-import { List, ListItem } from 'material-ui/List';
+
+import List from 'grommet/components/List';
+import ListItem from 'grommet/components/ListItem';
+import Button from 'grommet/components/Button';
+import Heading from 'grommet/components/Heading';
+import Section from 'grommet/components/Section';
+import Box from 'grommet/components/Box';
 
 @firebaseConnect(['rooms'])
 @connect(({ firebase: { auth, data: { rooms } } }) => ({ auth, rooms }))
@@ -35,31 +40,40 @@ export default class Lobby extends React.Component {
     const rooms = fromJS(this.props.rooms || {});
 
     return (
-      <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
-        <span style={{ display: 'flex' }}>
-          <h2 style={{ flex: 1, margin: 0 }}>Lobby</h2>
-          {!auth.isEmpty &&
-            <RaisedButton
-              label="Create new room"
-              onTouchTap={this.createRoom}
-            />
+      <Section pad="small">
+        <Box direction="row">
+          <Box flex>
+            <Heading>
+            Lobby
+          </Heading>
+          </Box>
+          { !auth.isEmpty &&
+            <Box>
+              <Button
+                primary
+                label="Create New Room"
+                onClick={this.createRoom}
+                href="#"
+              />
+            </Box>
           }
-        </span>
+        </Box>
         {rooms &&
-          <List style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+          <List>
             {rooms.count() === 0 &&
               <p>There are no current open drafts. Create a new one!</p>
             }
             {rooms.map((room, key) => (
               <ListItem
                 key={key} // eslint-disable-line
-                primaryText={room.get('name')}
-                onTouchTap={() => browserHistory.push(`/rooms/${key}`)}
-              />
+                onClick={() => browserHistory.push(`/rooms/${key}`)}
+              >
+                {room.get('name')}
+              </ListItem>
             )).valueSeq()}
           </List>
         }
-      </div>
+      </Section>
     );
   }
 }
