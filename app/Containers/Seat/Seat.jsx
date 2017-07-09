@@ -29,20 +29,24 @@ export default class Seat extends React.Component {
       set,
     };
     const boosterQueue = seat.get('boosterQueue').shift().toJS();
-    await firebase.set(`boosters/${boosterId}/cards/${index}/pickIndex`, pickIndex);
-    await firebase.set(`boosters/${boosterId}/cards/${index}/owner`, uid);
+    firebase.set(`seats/${seatId}/boosterQueue`, boosterQueue);
+    firebase.set(`seats/${seatId}/pickIndex`, pickIndex + 1);
+    firebase.set(`boosters/${boosterId}/cards/${index}/pickIndex`, pickIndex);
+    firebase.set(`boosters/${boosterId}/cards/${index}/owner`, uid);
+
     let collection = seat.get('collection');
 
+    // TODO: move this to when draft starts
+    // Do logic for each seat
     if (!collection) {
       const collectionRef = await firebase.push('collections', {
         owner: uid,
       });
       collection = collectionRef.key;
-      await firebase.set(`seats/${seatId}/collection`, collection);
+      firebase.set(`seats/${seatId}/collection`, collection);
     }
+
     firebase.push(`collections/${collection}/cards`, card);
-    firebase.set(`seats/${seatId}/pickIndex`, pickIndex + 1);
-    firebase.set(`seats/${seatId}/boosterQueue`, boosterQueue);
   }
 
   render() {
@@ -51,7 +55,6 @@ export default class Seat extends React.Component {
       return null;
     }
     const boosterId = seat.getIn(['boosterQueue', 0]);
-    console.log(boosterId);
 
     // TODO: display collection container
     return (
