@@ -90,7 +90,7 @@ export default class DraftRoomSetup extends React.Component {
         {!auth.isEmpty &&
           <List>
             {Immutable.Range(0, numberOfSeats).map((index) => {
-              const seat = seats.get(String(index));
+              const seat = seats.find(s => s.get('index') === index);
               if (!seat) {
                 return this.getEmptySeat(index);
               }

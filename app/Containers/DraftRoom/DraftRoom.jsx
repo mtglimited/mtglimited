@@ -61,26 +61,29 @@ export default class DraftRoom extends React.Component {
   joinDraft = (index) => {
     const { firebase, params, seats, auth } = this.props;
     const userId = auth.uid;
+    const { roomId } = params;
     const hasSeat = seats.find(seat => seat.getIn(['owner', 'uid']) === userId);
 
     if (hasSeat) {
       return;
     }
 
-    firebase.set(`seats/${index}`, {
+    const seatRef = firebase.push('seats', {
       owner: userId,
       room: params.roomId,
+      index,
     });
+    firebase.set(`rooms/${roomId}/seats/${index}`, seatRef.key);
   }
 
   chooseSet = (event, key, value) => {
-    const { firebase, params } = this.props;
-    firebase.set(`rooms/${params.roomId}/set`, value);
+    const { firebase, params: { roomId } } = this.props;
+    firebase.set(`rooms/${roomId}/set`, value);
   }
 
   startDraft = () => {
-    const { firebase, params } = this.props;
-    firebase.set(`rooms/${params.roomId}/isLive`, true);
+    const { firebase, params: { roomId } } = this.props;
+    firebase.set(`rooms/${roomId}/isLive`, true);
     // TODO: create collections for each seat?
     // TODO: maybe just let them generate a pack?
     // seats.map((seat, key) => firebase.push('boosters', this.getBooster(key, set)));
