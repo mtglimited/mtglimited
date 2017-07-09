@@ -1,7 +1,0 @@
-exports[`<App /> should match the snapshot 1`] = `
-<MuiThemeProvider>
-  <h1>
-    Child of App
-  </h1>
-</MuiThemeProvider>
-`;
