@@ -5,7 +5,10 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import Root from 'Containers/Root';
 import 'scss/index.scss';
 
+import thirdparty from './thirdparty';
+
 injectTapEventPlugin();
+thirdparty();
 
 const rootEl = document.getElementById('root');
 const render = Component =>
