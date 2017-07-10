@@ -8,6 +8,7 @@ import { browserHistory } from 'react-router';
 import List from 'grommet/components/List';
 import ListItem from 'grommet/components/ListItem';
 import Button from 'grommet/components/Button';
+import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
 import Section from 'grommet/components/Section';
 import Box from 'grommet/components/Box';
@@ -45,22 +46,24 @@ export default class Lobby extends React.Component {
 
     return (
       <Section pad="small">
-        <Box direction="row">
-          <Box flex>
-            <Heading>
+        <Header>
+          <Heading>
             Lobby
           </Heading>
-          </Box>
-          { !auth.isEmpty &&
-            <Box>
-              <Button
-                primary
-                label="Create New Room"
-                onClick={this.createRoom}
-              />
-            </Box>
+          <Box
+            justify="end"
+            flex
+            direction="row"
+          >
+            { !auth.isEmpty &&
+            <Button
+              primary
+              label="Create New Room"
+              onClick={this.createRoom}
+            />
           }
-        </Box>
+          </Box>
+        </Header>
         {rooms &&
           <List>
             {rooms.count() === 0 &&
