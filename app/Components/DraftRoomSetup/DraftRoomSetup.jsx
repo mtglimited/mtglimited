@@ -2,111 +2,111 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import Immutable from 'immutable';
-import MenuItem from 'material-ui/MenuItem';
-import RaisedButton from 'material-ui/RaisedButton';
-import SelectField from 'material-ui/SelectField';
-import AccountCircle from 'material-ui/svg-icons/action/account-circle';
-import Clear from 'material-ui/svg-icons/content/clear';
-import { List, ListItem } from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
 import Title from 'Components/Title';
 
+import Box from 'grommet/components/Box';
+import Select from 'grommet/components/Select';
+import Label from 'grommet/components/Label';
+import Button from 'grommet/components/Button';
+import Tiles from 'grommet/components/Tiles';
+
 import { SEAT_COUNT_OPTIONS } from './constants';
+import Seat from './Seat';
 
-export default class DraftRoomSetup extends React.Component {
-  static propTypes = {
-    auth: PropTypes.shape().isRequired,
-    firebase: PropTypes.shape().isRequired,
-    roomId: PropTypes.string.isRequired,
-    room: ImmutablePropTypes.map.isRequired,
-    sets: ImmutablePropTypes.map.isRequired,
-    seats: ImmutablePropTypes.map.isRequired,
-    getUpFromSeat: PropTypes.func.isRequired,
-    joinDraft: PropTypes.func.isRequired,
-    startDraft: PropTypes.func.isRequired,
-  };
+const DraftRoomSetup = (props) => {
+  const {
+      firebase,
+      roomId,
+      room,
+      auth,
+      startDraft,
+      joinDraft,
+      leaveDraft,
+      seats,
+      sets,
+    } = props;
+  const numberOfSeats = room.get('numberOfSeats') || SEAT_COUNT_OPTIONS.get(0);
+  const setOptions = sets.map(set => ({
+    label: set.get('name'),
+    value: set.get('code'),
+  })).toArray();
 
-  getEmptySeat = index => (
-    <ListItem
-      key={index}
-      primaryText={`Seat ${index + 1} (open)`}
-      leftIcon={<AccountCircle />}
-      onTouchTap={() => this.props.joinDraft(index)}
-    />
-  );
-
-  getSeatWithUser = (seat, index) => {
-    const { getUpFromSeat } = this.props;
-    const owner = seat.get('owner');
-    const primaryText = `Seat ${index + 1}: ${owner.get('displayName')}`;
-
-    return (
-      <ListItem
-        key={index}
-        primaryText={primaryText}
-        leftIcon={<Avatar src={owner.get('avatarUrl')} />}
-        rightIcon={<Clear onTouchTap={event => getUpFromSeat(event, index)} />}
+  return (
+    <Box pad="small">
+      <Title
+        name={room.get('name')}
+        setName={name => firebase.set(`rooms/${roomId}/name`, name)}
       />
-    );
-  }
-
-  render() {
-    const { firebase, roomId, room, auth, startDraft, seats, sets } = this.props;
-    const numberOfSeats = room.get('numberOfSeats') || SEAT_COUNT_OPTIONS.get(0);
-
-    return (
-      <div>
-        <Title
-          name={room.get('name')}
-          setName={name => firebase.set(`rooms/${roomId}/name`, name)}
-        />
-        <SelectField
-          floatingLabelText="Set"
-          value={room.get('set')}
-          onChange={(event, key, value) => firebase.set(`rooms/${roomId}/set`, value)}
+      <Box direction="row" full>
+        <Box
+          colorIndex="light-2"
+          pad="medium"
+          basis="1/4"
+          justify="between"
         >
-          {sets.valueSeq().map(set => (
-            <MenuItem
-              key={set.get('code')}
-              value={set.get('code')}
-              primaryText={set.get('name')}
+          <Box>
+            <Label size="small">
+                Card Set
+              </Label>
+            <Select
+              options={setOptions}
+              value={room.get('set')}
+              onChange={({ option }) => firebase.set(`rooms/${roomId}/set`, option.value)}
             />
-          ))}
-        </SelectField>
-        <SelectField
-          floatingLabelText="Number of Players"
-          value={numberOfSeats}
-          onChange={(event, key, value) => firebase.set(`rooms/${roomId}/numberOfSeats`, value)}
-        >
-          {SEAT_COUNT_OPTIONS.map(number => (
-            <MenuItem
-              key={number}
-              value={number}
-              primaryText={number}
+          </Box>
+          <Box>
+            <Label size="small">
+                Number of Players
+              </Label>
+            <Select
+              inline
+              options={SEAT_COUNT_OPTIONS.toArray()}
+              value={numberOfSeats}
+              onChange={({ option }) => firebase.set(`rooms/${roomId}/numberOfSeats`, option)}
             />
-          ))}
-        </SelectField>
+          </Box>
+          <Button
+            primary
+            onClick={seats && seats.count() === numberOfSeats ? startDraft : null}
+            label="Start Draft"
+          />
+        </Box>
+        <Box flex pad="medium">
+          {!auth.isEmpty &&
+            <Tiles flush={false} fill>
+              {Immutable.Range(0, numberOfSeats).map((index) => {
+                const seatId = room.getIn(['seats', index]);
+                const seat = seats.get(seatId);
+                const hasCurrentUser = seat && seat.getIn(['owner', 'uid']) === auth.uid;
 
-        {!auth.isEmpty &&
-          <List>
-            {Immutable.Range(0, numberOfSeats).map((index) => {
-              const seat = seats.find(s => s.get('index') === index);
-              if (!seat) {
-                return this.getEmptySeat(index);
-              }
+                return (
+                  <Seat
+                    index={index}
+                    hasCurrentUser={hasCurrentUser}
+                    seat={seat}
+                    joinDraft={joinDraft}
+                    leaveDraft={leaveDraft}
+                  />
+                );
+              })}
+            </Tiles>
+          }
+        </Box>
+      </Box>
+    </Box>
+  );
+};
 
-              return this.getSeatWithUser(seat, index);
-            })}
-          </List>
-        }
-        <RaisedButton
-          label="Start Draft"
-          style={{ display: 'flex' }}
-          primary
-          onTouchTap={startDraft}
-          disabled={!seats || !(seats.count() === numberOfSeats)}
-        />
-      </div>
-    );
-  }
-}
+DraftRoomSetup.propTypes = {
+  auth: PropTypes.shape().isRequired,
+  firebase: PropTypes.shape().isRequired,
+  roomId: PropTypes.string.isRequired,
+  room: ImmutablePropTypes.map.isRequired,
+  sets: ImmutablePropTypes.map.isRequired,
+  seats: ImmutablePropTypes.map.isRequired,
+  leaveDraft: PropTypes.func.isRequired,
+  joinDraft: PropTypes.func.isRequired,
+  startDraft: PropTypes.func.isRequired,
+};
+
+export default DraftRoomSetup;
