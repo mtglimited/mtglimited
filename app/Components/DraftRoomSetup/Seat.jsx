@@ -7,8 +7,8 @@ import Button from 'grommet/components/Button';
 import Image from 'grommet/components/Image';
 import Heading from 'grommet/components/Heading';
 
-const Seat = ({ index, hasCurrentUser, seat, joinDraft }) => {
-  const owner = seat && seat.get('owner');
+const Seat = ({ index, joinDraft, seatOwner }) => {
+  const owner = seatOwner;
   return (
     <Tile
       key={index}
@@ -27,14 +27,14 @@ const Seat = ({ index, hasCurrentUser, seat, joinDraft }) => {
             src={owner.get('avatarUrl')}
             style={{ borderRadius: 12 }}
           />
-          {hasCurrentUser &&
-          <Heading
-            flex
-            tag="h4"
-            margin="small"
-          >
-            {owner.get('displayName')}
-          </Heading>
+          {owner &&
+            <Heading
+              flex
+              tag="h4"
+              margin="small"
+            >
+              {owner.get('displayName')}
+            </Heading>
           }
         </Box>
       }
@@ -50,8 +50,7 @@ const Seat = ({ index, hasCurrentUser, seat, joinDraft }) => {
 
 Seat.propTypes = {
   index: PropTypes.number.isRequired,
-  hasCurrentUser: PropTypes.bool,
-  seat: PropTypes.shape(),
+  seatOwner: PropTypes.shape(),
   joinDraft: PropTypes.func.isRequired,
 };
 

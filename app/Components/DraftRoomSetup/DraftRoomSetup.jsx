@@ -21,9 +21,9 @@ const DraftRoomSetup = (props) => {
       auth,
       startDraft,
       joinDraft,
-      leaveDraft,
       seats,
       sets,
+      users,
     } = props;
   const numberOfSeats = room.get('numberOfSeats') || SEAT_COUNT_OPTIONS.get(0);
   const setOptions = sets.map(set => ({
@@ -46,8 +46,8 @@ const DraftRoomSetup = (props) => {
         >
           <Box>
             <Label size="small">
-                Card Set
-              </Label>
+              Card Set
+            </Label>
             <Select
               options={setOptions}
               value={room.get('set')}
@@ -76,16 +76,15 @@ const DraftRoomSetup = (props) => {
             <Tiles flush={false} fill>
               {Immutable.Range(0, numberOfSeats).map((index) => {
                 const seatId = room.getIn(['seats', index]);
-                const seat = seats.get(seatId);
-                const hasCurrentUser = seat && seat.getIn(['owner', 'uid']) === auth.uid;
+                const seat = seatId && seats.get(seatId);
+                const seatOwner = seat && users.get(seat.get('owner'));
 
                 return (
                   <Seat
+                    key={seatId}
                     index={index}
-                    hasCurrentUser={hasCurrentUser}
-                    seat={seat}
+                    seatOwner={seatOwner}
                     joinDraft={joinDraft}
-                    leaveDraft={leaveDraft}
                   />
                 );
               })}
@@ -104,9 +103,9 @@ DraftRoomSetup.propTypes = {
   room: ImmutablePropTypes.map.isRequired,
   sets: ImmutablePropTypes.map.isRequired,
   seats: ImmutablePropTypes.map.isRequired,
-  leaveDraft: PropTypes.func.isRequired,
   joinDraft: PropTypes.func.isRequired,
   startDraft: PropTypes.func.isRequired,
+  users: ImmutablePropTypes.map.isRequired,
 };
 
 export default DraftRoomSetup;

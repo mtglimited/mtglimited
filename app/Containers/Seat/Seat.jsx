@@ -1,60 +1,56 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { fromJS } from 'immutable';
-import { firebaseConnect } from 'react-redux-firebase';
+import Immutable from 'immutable';
 import Booster from 'Containers/Booster';
 
-@firebaseConnect(({ seatId }) => [
-  `seats/${seatId}`,
-])
-@connect(({ firebase }, ownProps) => ({
-  seat: firebase.data.seats && fromJS(firebase.data.seats[ownProps.seatId]),
-  auth: firebase.auth,
-}))
 export default class Seat extends React.Component {
   static propTypes = {
-    set: PropTypes.shape().isRequired,
+    sets: PropTypes.shape().isRequired,
     seat: PropTypes.shape(),
     seatId: PropTypes.string.isRequired,
     auth: PropTypes.shape().isRequired,
+    passPack: PropTypes.func.isRequired,
+    firebase: PropTypes.shape().isRequired,
+    selectedSet: PropTypes.shape().isRequired,
   };
 
-  pickCard = async (boosterId, index, data, set) => {
-    const { firebase, seat, seatId, auth: { uid } } = this.props;
-    const pickIndex = seat.get('pickIndex', 0);
-    const card = {
-      pickIndex,
-      data,
-      set,
-    };
-    const boosterQueue = seat.get('boosterQueue').shift().toJS();
-    firebase.set(`seats/${seatId}/boosterQueue`, boosterQueue);
-    firebase.set(`seats/${seatId}/pickIndex`, pickIndex + 1);
-    firebase.set(`boosters/${boosterId}/cards/${index}/pickIndex`, pickIndex);
-    firebase.set(`boosters/${boosterId}/cards/${index}/owner`, uid);
+  pickCard = async (boosterId, index, data, booster) => {
+    const { passPack, firebase, seat, seatId, auth: { uid } } = this.props;
+    const set = booster.get('set');
+    const pickNumber = seat.get('pickNumber');
+    const packNumber = seat.get('packNumber');
+    const packToPassKey = seat.get('boosterQueue').keySeq().first();
+    const packToPass = seat.get('boosterQueue').first();
+    const collection = seat.get('collection');
+    const unpickedCards = booster.get('cards').filterNot(card => card.get('pickNumber') >= 0);
 
-    let collection = seat.get('collection');
+    await firebase.set(`boosters/${boosterId}/cards/${index}/pickNumber`, pickNumber);
 
-    // TODO: move this to when draft starts
-    // Do logic for each seat
-    if (!collection) {
-      const collectionRef = await firebase.push('collections', {
-        owner: uid,
-      });
-      collection = collectionRef.key;
-      firebase.set(`seats/${seatId}/collection`, collection);
+    if (unpickedCards.count() > 1) {
+      await passPack(seatId, packToPass, packNumber);
     }
 
-    firebase.push(`collections/${collection}/cards`, card);
+    await firebase.remove(`seats/${seatId}/boosterQueue/${packToPassKey}`);
+    await firebase.set(`seats/${seatId}/pickNumber`, pickNumber + 1);
+    await firebase.push(`collections/${collection}/cards`, {
+      pickNumber,
+      index,
+      set,
+    });
+    await firebase.set(`boosters/${boosterId}/cards/${index}/owner`, uid);
   }
 
   render() {
-    const { set, seat, seatId } = this.props;
-    if (!seat) {
+    const { sets, seat, seatId, selectedSet } = this.props;
+    if (!(seat && sets)) {
       return null;
     }
-    const boosterId = seat.getIn(['boosterQueue', 0]);
+
+    const packNumber = seat.get('packNumber') - 1;
+    const setKey = sets.getIn([selectedSet, 'draftOrder', packNumber]);
+    const set = sets.get(setKey);
+    const boosterQueue = seat.get('boosterQueue', new Immutable.List());
+    const boosterId = boosterQueue.first();
 
     // TODO: display collection container
     return (
