@@ -1,48 +1,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
-import { firebaseConnect, populatedDataToJS } from 'react-redux-firebase';
+import { firebaseConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
-import RaisedButton from 'material-ui/RaisedButton';
-
-const mapStateToProps = ({ firebase }, { params }) => ({
-  set: fromJS(populatedDataToJS(firebase, `sets/${params.code}`)),
-});
 
 @firebaseConnect(({ params }) => [`/sets/${params.code}`])
-@connect(mapStateToProps)
+@connect(({ firebase }, { params }) => ({
+  set: firebase.data.sets && fromJS(firebase.data.sets[params.code]),
+}))
 export default class ManageSet extends React.Component {
   static propTypes = {
     set: PropTypes.shape(),
-    firebase: PropTypes.shape(),
-    params: PropTypes.shape(),
   };
 
-  hashSet = () => {
-    const { firebase, set, params } = this.props;
-    firebase.remove(`/sets/${params.code}/hashedCards`);
-    set.get('cards')
-      .map((card, index) => {
-        const hashedCardRef = firebase.push(`/sets/${params.code}/hashedCards`, {
-          ...card.toJS(),
-        });
-        return firebase.set(`/sets/${params.code}/cards/${index}/hash`, hashedCardRef.key);
-      });
-  }
-
   render() {
-    const { set, params } = this.props;
-    const { code } = params;
+    const { set } = this.props;
     const baseUrl = 'https://storage.googleapis.com/mtglimited-154323.appspot.com/cards';
     if (!set) {
       return null;
     }
+    const code = set.get('code');
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h1>{set.get('name')}</h1>
         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-          {set.get('hashedCards').map(card => (
+          {set.get('cards').map(card => card && (
             <img
               alt={card.get('imageName')}
               style={{ width: 223 }}
@@ -51,7 +34,6 @@ export default class ManageSet extends React.Component {
             />
           ))}
         </div>
-        <RaisedButton label="Hash Set" primary onTouchTap={this.hashSet} />
       </div>
     );
   }
