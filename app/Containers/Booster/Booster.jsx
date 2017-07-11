@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Radium from 'radium';
 import { connect } from 'react-redux';
 import { fromJS } from 'immutable';
-import { firebaseConnect, populate } from 'react-redux-firebase';
+import { firebaseConnect } from 'react-redux-firebase';
 
 const style = {
   booster: {
@@ -13,17 +13,19 @@ const style = {
   },
   card: {
     width: '223px',
+    cursor: 'pointer',
     ':hover': {
       opacity: '0.9',
-      cursor: 'pointer',
     },
   },
 };
 
 @Radium
-@firebaseConnect(({ boosterId }) => [`boosters/${boosterId}`])
+@firebaseConnect(({ boosterId }) => [
+  `boosters/${boosterId}`,
+])
 @connect(({ firebase }, ownProps) => ({
-  booster: fromJS(populate(firebase, `boosters/${ownProps.boosterId}`)),
+  booster: firebase.data.boosters && fromJS(firebase.data.boosters[ownProps.boosterId]),
 }))
 export default class Booster extends React.Component {
   static propTypes = {
@@ -45,14 +47,14 @@ export default class Booster extends React.Component {
     return (
       <div style={style.booster}>
         {booster.get('cards').map((card, index) => {
-          const cardData = set.getIn(['hashedCards', card.get('data')]);
-          return !card.get('pickIndex') && card.get('pickIndex') !== 0 && (
+          const cardData = set.getIn(['cards', card.get('data')]);
+          return !card.get('pickNumber') && card.get('pickNumber') !== 0 && (
             <img
-              alt={cardData.get('imageName')}
+              alt={`${card.get('data')}: ${cardData.get('imageName')}`}
               style={style.card}
               src={this.getCardImageUrl(booster.get('set'), cardData.get('imageName'))}
               key={index} // eslint-disable-line
-              onTouchTap={() => pickCard(boosterId, index, card.get('data'), booster.get('set'))}
+              onTouchTap={() => pickCard(boosterId, index, card.get('data'), booster)}
             />
           );
         })}

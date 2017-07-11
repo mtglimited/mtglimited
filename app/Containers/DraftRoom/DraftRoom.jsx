@@ -2,24 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
-import { firebaseConnect, populate } from 'react-redux-firebase';
+import { firebaseConnect } from 'react-redux-firebase';
 import DraftRoomSetup from 'Components/DraftRoomSetup';
 import DraftLive from 'Containers/DraftLive';
-
-const populates = [
-  { child: 'owner', root: 'users' },
-];
 
 @firebaseConnect(ownProps => [
   `rooms/${ownProps.params.roomId}`,
   'sets',
-  `seats#populate=owner:users&orderByChild=room&equalTo=${ownProps.params.roomId}`,
+  `seats#orderByChild=room&equalTo=${ownProps.params.roomId}`,
+  'users',
 ])
 @connect(({ firebase }, { params }) => ({
   room: firebase.data.rooms && fromJS(firebase.data.rooms[params.roomId]),
-  seats: fromJS(populate(firebase, 'seats', populates)),
+  seats: fromJS(firebase.data.seats),
   sets: fromJS(firebase.data.sets),
   auth: firebase.auth,
+  users: fromJS(firebase.data.users),
 }))
 export default class DraftRoom extends React.Component {
   static propTypes = {
@@ -31,6 +29,7 @@ export default class DraftRoom extends React.Component {
     auth: PropTypes.object.isRequired,
     route: PropTypes.object.isRequired,
     router: PropTypes.object.isRequired,
+    users: PropTypes.object,
   };
 
   static defaultProps = {
@@ -43,18 +42,8 @@ export default class DraftRoom extends React.Component {
     router.setRouteLeaveHook(route, this.leaveDraft);
   }
 
-  getSeatKey = () => this.props.seats
-      .findKey(s => s.getIn(['owner', 'uid']) === this.props.auth.uid);
-
-  getBooster = (key, set) => {
-    const { params } = this.props;
-    return {
-      seat: key,
-      room: params.roomId,
-      cards: [],
-      set,
-    };
-  }
+  getSeatKey = () => this.props.seats && this.props.seats
+      .findKey(s => s.get('owner') === this.props.auth.uid);
 
   leaveDraft = () => {
     const { firebase, params, auth, seats } = this.props;
@@ -93,19 +82,23 @@ export default class DraftRoom extends React.Component {
   }
 
   startDraft = () => {
-    const { firebase, params: { roomId } } = this.props;
+    const { seats, room, firebase, params: { roomId } } = this.props;
     firebase.set(`rooms/${roomId}/isLive`, true);
-    // TODO: create collections for each seat?
-    // TODO: maybe just let them generate a pack?
-    // seats.map((seat, key) => firebase.push('boosters', this.getBooster(key, set)));
+    room.get('seats').forEach(async (seatId) => {
+      const owner = seats.getIn([seatId, 'owner']);
+      const collectionRef = await firebase.push('collections', { owner });
+      firebase.set(`seats/${seatId}/collection`, collectionRef.key);
+      firebase.set(`seats/${seatId}/packNumber`, 0);
+      firebase.set(`seats/${seatId}/pickNumber`, 0);
+    });
   }
 
   render() {
-    if (!this.props.room) {
+    if (!this.props.room || !this.props.users) {
       return null;
     }
 
-    const { params, firebase, auth, sets, seats, room } = this.props;
+    const { params, firebase, auth, sets, seats, room, users } = this.props;
     const isLive = room.get('isLive');
 
     return (
@@ -113,6 +106,7 @@ export default class DraftRoom extends React.Component {
         {!isLive &&
           <DraftRoomSetup
             auth={auth}
+            users={users}
             room={room}
             seats={seats}
             sets={sets}
@@ -125,6 +119,7 @@ export default class DraftRoom extends React.Component {
         }
         {isLive &&
           <DraftLive
+            room={room}
             selectedSet={room.get('set')}
             seats={seats}
             roomId={params.roomId}
