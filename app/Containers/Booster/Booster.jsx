@@ -32,14 +32,14 @@ export default class Booster extends React.Component {
     pickCard: PropTypes.func.isRequired,
     booster: PropTypes.shape(),
     set: PropTypes.shape().isRequired,
-    boosterId: PropTypes.string.isRequired,
   };
 
+  // TODO: put this base url in constants/config file
   getCardImageUrl = (set, imageName) =>
     `https://storage.googleapis.com/mtglimited-154323.appspot.com/cards/${set}/${imageName}.jpeg`;
 
   render() {
-    const { pickCard, set, boosterId, booster } = this.props;
+    const { pickCard, set, booster } = this.props;
     if (!booster) {
       return null;
     }
@@ -54,7 +54,7 @@ export default class Booster extends React.Component {
               style={style.card}
               src={this.getCardImageUrl(booster.get('set'), cardData.get('imageName'))}
               key={index} // eslint-disable-line
-              onTouchTap={() => pickCard(boosterId, index, card.get('data'), booster)}
+              onTouchTap={() => pickCard(index)}
             />
           );
         })}
