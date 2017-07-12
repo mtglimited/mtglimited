@@ -10,6 +10,16 @@ const getRandomCard = cards => cards.get(Math.floor(Math.random() * Math.floor(c
 
 const isMythicRare = () => Math.floor(Math.random() * Math.floor(7)) === 1;
 
+const incrementSeatPickNumber = (seatId, pickNumber) => database
+  .ref(`seats/${seatId}`)
+  .update({
+    pickNumber: pickNumber + 1,
+  });
+
+const passPack = (seatToPass, boosterId) => database
+  .ref(`seats/${seatToPass}/boosterQueue`)
+  .push(boosterId);
+
 exports.pickCard = functions.https.onRequest(({ query: { seatId, cardIndex } }, res) => database
   .ref(`seats/${seatId}`).once('value', (seatSnapshot) => {
     const seat = Immutable.fromJS(seatSnapshot.val());
@@ -28,47 +38,48 @@ exports.pickCard = functions.https.onRequest(({ query: { seatId, cardIndex } }, 
     return database
       .ref(`seats/${seatId}/boosterQueue/${boosterKey}`)
       .remove(() => boosterRef
-        .once('value', boosterSnapshot => cardRef
-          .update({
-            pickNumber,
-            owner,
-          })
-          .then(() => cardRef
-            .once('value', cardSnapshot => collectionCardsRef
-              .push({
-                pickNumber: cardSnapshot.val().pickNumber,
-                data: cardSnapshot.val().data,
-                set: boosterSnapshot.val().set,
-              })
-              .then(() => roomSeatsRef
-                .once('value', (roomSeatsSnapshot) => {
-                  const seats = Immutable.fromJS(roomSeatsSnapshot.val());
-                  let seatIndex = seats.findKey(id => id === seatId);
+        .once('value', (boosterSnapshot) => {
+          const cards = Immutable.fromJS(boosterSnapshot.val().cards);
+          const unpickedCards = cards.filterNot(card => card.get('pickNumber') >= 0);
+          return cardRef
+            .update({
+              pickNumber,
+              owner,
+            })
+            .then(() => cardRef
+              .once('value', cardSnapshot => collectionCardsRef
+                .push({
+                  pickNumber: cardSnapshot.val().pickNumber,
+                  data: cardSnapshot.val().data,
+                  set: boosterSnapshot.val().set,
+                })
+                .then(() => roomSeatsRef
+                  .once('value', (roomSeatsSnapshot) => {
+                    const seats = Immutable.fromJS(roomSeatsSnapshot.val());
+                    let seatIndex = seats.findKey(id => id === seatId);
 
-                  if (packNumber % 2) {
-                    seatIndex += 1; // right on 1
-                  } else {
-                    seatIndex -= 1; // left on 0 and 2
-                  }
+                    if (packNumber % 2) {
+                      seatIndex += 1; // right on 1
+                    } else {
+                      seatIndex -= 1; // left on 0 and 2
+                    }
 
-                  const seatToPass = seats.get(seatIndex % (seats.count()));
-                  return database
-                    .ref(`seats/${seatToPass}/boosterQueue`)
-                    .push(boosterId)
-                    .then(() => database
-                      .ref(`seats/${seatId}`)
-                      .update({
-                        pickNumber: seat.get('pickNumber') + 1,
-                      })
-                      .then(() => res.send('done')),
-                    );
-                }),
-              ),
-            ),
-          ),
-        ),
+                    const seatToPass = seats.get(seatIndex % (seats.count()));
+                    return incrementSeatPickNumber(seatId, pickNumber)
+                      .then(() => {
+                        if (unpickedCards.count() > 1) {
+                          return passPack(seatToPass, boosterId).then(() => res.send('done'));
+                        }
+
+                        return res.send('done, did not pass pack');
+                      });
+                  })
+                )
+              )
+            );
+        })
       );
-  }),
+  })
 );
 
 exports.openBoosterPack = functions.https.onRequest(({ query: { seatId } }, res) => database
@@ -121,11 +132,11 @@ exports.openBoosterPack = functions.https.onRequest(({ query: { seatId } }, res)
                   pickNumber: 1,
                   packNumber: packNumber + 1,
                 })
-                .then(() => res.send('done')),
-              ),
+                .then(() => res.send('done'))
+              )
             );
-        }),
-      ),
+        })
+      )
     );
-  }),
+  })
 );
