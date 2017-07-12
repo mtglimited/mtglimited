@@ -20,17 +20,14 @@ const style = {
 };
 
 @Radium
-@firebaseConnect(({ boosterId }) => [
-  `boosters/${boosterId}`,
-])
+@firebaseConnect(({ collectionId }) => [`collections/${collectionId}`])
 @connect(({ firebase }, ownProps) => ({
-  booster: firebase.data.boosters && fromJS(firebase.data.boosters[ownProps.boosterId]),
+  collection: firebase.data.collections && fromJS(firebase.data.collections[ownProps.collectionId]),
 }))
-export default class Booster extends React.Component {
+export default class Collection extends React.Component {
   static propTypes = {
-    pickCard: PropTypes.func.isRequired,
-    booster: PropTypes.shape(),
-    set: PropTypes.shape().isRequired,
+    collection: PropTypes.shape(),
+    sets: PropTypes.shape().isRequired,
   };
 
   // TODO: put this base url in constants/config file
@@ -38,22 +35,21 @@ export default class Booster extends React.Component {
     `https://storage.googleapis.com/mtglimited-154323.appspot.com/cards/${set}/${imageName}.jpeg`;
 
   render() {
-    const { pickCard, set, booster } = this.props;
-    if (!booster) {
+    const { sets, collection } = this.props;
+    if (!sets || !collection || !collection.get('cards')) {
       return null;
     }
 
     return (
       <div style={style.booster}>
-        {booster.get('cards').map((card, index) => {
-          const cardData = set.getIn(['cards', card.get('data')]);
-          return !card.get('pickNumber') && card.get('pickNumber') !== 0 && (
+        {collection.get('cards').map((card, index) => {
+          const cardData = sets.getIn([card.get('set'), 'cards', card.get('data')]);
+          return (
             <img
               alt={`${card.get('data')}: ${cardData.get('imageName')}`}
               style={style.card}
-              src={this.getCardImageUrl(booster.get('set'), cardData.get('imageName'))}
+              src={this.getCardImageUrl(card.get('set'), cardData.get('imageName'))}
               key={index} // eslint-disable-line
-              onTouchTap={() => pickCard(index)}
             />
           );
         })}
