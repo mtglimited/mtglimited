@@ -44,21 +44,24 @@ exports.pickCard = functions.https.onRequest(({ query: { seatId, cardIndex } }, 
                 .once('value', (roomSeatsSnapshot) => {
                   const seats = Immutable.fromJS(roomSeatsSnapshot.val());
                   let seatIndex = seats.findKey(id => id === seatId);
-                  console.log(packNumber, seatIndex);
+
                   if (packNumber % 2) {
                     seatIndex += 1; // right on 1
                   } else {
                     seatIndex -= 1; // left on 0 and 2
                   }
-                  console.log(seatIndex);
+
                   const seatToPass = seats.get(seatIndex % (seats.count()));
                   return database
                     .ref(`seats/${seatToPass}/boosterQueue`)
                     .push(boosterId)
-                    .then(() => {
-                      console.log('done');
-                      res.send('done');
-                    });
+                    .then(() => database
+                      .ref(`seats/${seatId}`)
+                      .update({
+                        pickNumber: seat.get('pickNumber') + 1,
+                      })
+                      .then(() => res.send('done')),
+                    );
                 }),
               ),
             ),
@@ -109,13 +112,18 @@ exports.openBoosterPack = functions.https.onRequest(({ query: { seatId } }, res)
           return database
             .ref('boosters')
             .push(booster)
-            .then((boosterRef) => {
-              console.log(boosterRef.key);
-              res.send(boosterRef.key);
-              return database.ref(`seats/${seatId}/boosterQueue`).push(boosterRef.key);
-              // await firebase.set(`/seats/${seatId}/pickNumber`, 1);
-              // await firebase.set(`/seats/${seatId}/packNumber`, packNumber + 1);
-            });
+            .then(boosterRef => database
+              .ref(`seats/${seatId}/boosterQueue`)
+              .push(boosterRef.key)
+              .then(() => database
+                .ref(`seats/${seatId}`)
+                .update({
+                  pickNumber: 1,
+                  packNumber: packNumber + 1,
+                })
+                .then(() => res.send('done')),
+              ),
+            );
         }),
       ),
     );
