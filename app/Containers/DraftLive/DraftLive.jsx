@@ -43,7 +43,7 @@ export default class DraftLive extends React.Component {
     const packNumber = seat.get('packNumber');
     const pickNumber = seat.get('pickNumber');
     const canOpenPack = boosterQueue.count() === 0 && seat.get('packNumber') < 3 && seat.get('pickNumber') % 15 === 0;
-    const boosterSet = sets.getIn([selectedSet, 'draftOrder', packNumber]);
+    const boosterSet = sets.getIn([selectedSet, 'draftOrder', packNumber - 1]);
 
     return (
       <div>
