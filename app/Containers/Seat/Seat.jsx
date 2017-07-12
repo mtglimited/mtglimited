@@ -16,7 +16,6 @@ const Seat = ({ sets, seat, seatId, boosterSet, pickCard }) => {
   const packNumber = seat.get('packNumber');
   const pickNumber = seat.get('pickNumber');
 
-  // TODO: display collection container
   return (
     <div>
       <h2>Current Pack</h2>
