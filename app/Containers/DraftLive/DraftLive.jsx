@@ -6,7 +6,9 @@ import CircularProgress from 'material-ui/CircularProgress';
 import Seat from 'Containers/Seat';
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:5002/mtglimited-154323/us-central1/';
+const baseUrl = process.env.NODE_ENV === 'production'
+  ? 'https://us-central1-mtglimited-154323.cloudfunctions.net/'
+  : 'http://localhost:5002/mtglimited-154323/us-central1/';
 
 export default class DraftLive extends React.Component {
   static propTypes = {
