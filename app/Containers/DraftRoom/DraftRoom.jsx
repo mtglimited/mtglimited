@@ -86,7 +86,7 @@ export default class DraftRoom extends React.Component {
     firebase.set(`rooms/${roomId}/isLive`, true);
     room.get('seats').forEach(async (seatId) => {
       const owner = seats.getIn([seatId, 'owner']);
-      const collectionRef = await firebase.push('collections', { owner });
+      const collectionRef = await firebase.push('collections', { roomId, owner });
       firebase.set(`seats/${seatId}/collection`, collectionRef.key);
       firebase.set(`seats/${seatId}/packNumber`, 0);
       firebase.set(`seats/${seatId}/pickNumber`, 0);

@@ -4,6 +4,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Immutable from 'immutable';
 import CircularProgress from 'material-ui/CircularProgress';
 import Seat from 'Containers/Seat';
+import axios from 'axios';
+
+const baseUrl = 'http://localhost:5002/mtglimited-154323/us-central1/';
 
 export default class DraftLive extends React.Component {
   static propTypes = {
@@ -12,72 +15,25 @@ export default class DraftLive extends React.Component {
     firebase: PropTypes.shape(),
     sets: PropTypes.shape(),
     auth: PropTypes.shape().isRequired,
-    room: PropTypes.shape().isRequired,
+    roomId: PropTypes.string.isRequired,
   };
 
-  getRandomCard = cards => cards.get(Math.floor(Math.random() * Math.floor(cards.size)));
+  pickCard = (cardIndex) => {
+    const { seats, roomId, auth: { uid } } = this.props;
+    const seatId = seats.findKey(seat => seat.get('owner') === uid);
 
-  isMythicRare = () => Math.floor(Math.random() * Math.floor(7)) === 1;
-
-  createBooster = async () => {
-    const { firebase, roomId, seats, sets, selectedSet, auth } = this.props;
-    const owner = auth.uid;
-    const seatId = seats.findKey(seat => seat.get('owner') === owner);
-    const seat = seats.get(seatId);
-
-    const packNumber = seat.get('packNumber');
-    const set = sets.get(selectedSet);
-    const packSet = set.getIn(['draftOrder', packNumber]);
-    const cardsByRarity = sets.getIn([packSet, 'cards']).groupBy(card => card && card.get('rarity').toLowerCase());
-    const cards = sets.get(packSet)
-      .get('booster')
-      .filterNot(rarity => rarity === 'land' || rarity === 'marketing')
-      .map((rarity) => {
-        let rarityKey = rarity;
-
-        if (typeof rarity === 'object') {
-          rarityKey = this.isMythicRare() ? 'mythic rare' : 'rare';
-        }
-
-        const cardChoices = cardsByRarity.get(rarityKey);
-        const randomCard = this.getRandomCard(cardChoices);
-        const randomCardIndex = sets.getIn([packSet, 'cards']).findKey(card => card && card.get('id') === randomCard.get('id'));
-
-        return {
-          data: randomCardIndex,
-        };
-      });
-
-    const booster = {
-      cards: cards.toJS(),
-      owner,
-      roomId,
-      seatId,
-      set: packSet,
-    };
-
-    const boosterRef = await firebase.push('boosters', booster);
-
-    await firebase.push(`/seats/${seatId}/boosterQueue`, boosterRef.key);
-    await firebase.set(`/seats/${seatId}/pickNumber`, 1);
-    await firebase.set(`/seats/${seatId}/packNumber`, packNumber + 1);
+    return axios.get(`${baseUrl}pickCard?seatId=${seatId}&$roomId=${roomId}&cardIndex=${cardIndex}`);
   }
 
-  passPack = async (seatId, packToPass, packNumber) => {
-    const { firebase, room } = this.props;
-    const numberOfSeats = room.get('seats').size;
-    let seatIndex = room.get('seats').findKey(id => id === seatId);
-    if (packNumber % 2) {
-      seatIndex -= 1; // left
-    } else {
-      seatIndex += 1; // right
-    }
-    const seatToPass = room.getIn(['seats', seatIndex % numberOfSeats]);
-    await firebase.push(`seats/${seatToPass}/boosterQueue`, packToPass);
+  openBoosterPack = () => {
+    const { seats, auth: { uid } } = this.props;
+    const seatId = seats.findKey(seat => seat.get('owner') === uid);
+
+    return axios.get(`${baseUrl}openBoosterPack?seatId=${seatId}`);
   }
 
   render() {
-    const { seats, auth, sets, selectedSet, firebase } = this.props;
+    const { seats, auth, sets, selectedSet, firebase, roomId } = this.props;
     const seatId = seats.findKey(s => s.get('owner') === auth.uid);
     const seat = seats.get(seatId);
     if (!seat) {
@@ -98,17 +54,18 @@ export default class DraftLive extends React.Component {
           <RaisedButton
             label={`Open a ${boosterSet} booster pack`}
             secondary
-            onTouchTap={this.createBooster}
+            onTouchTap={this.openBoosterPack}
           />
         }
         <Seat
+          roomId={roomId}
           seat={seat}
           auth={auth}
           seatId={seatId}
           sets={sets}
-          passPack={this.passPack}
+          pickCard={this.pickCard}
           firebase={firebase}
-          selectedSet={selectedSet}
+          boosterSet={boosterSet}
         />
       </div>
     );
