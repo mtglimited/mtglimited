@@ -81,7 +81,7 @@ const DraftRoomSetup = (props) => {
 
                 return (
                   <Seat
-                    key={seatId}
+                    key={seatId || index}
                     index={index}
                     seatOwner={seatOwner}
                     joinDraft={joinDraft}
@@ -102,7 +102,7 @@ DraftRoomSetup.propTypes = {
   roomId: PropTypes.string.isRequired,
   room: ImmutablePropTypes.map.isRequired,
   sets: ImmutablePropTypes.map.isRequired,
-  seats: ImmutablePropTypes.map.isRequired,
+  seats: ImmutablePropTypes.map,
   joinDraft: PropTypes.func.isRequired,
   startDraft: PropTypes.func.isRequired,
   users: ImmutablePropTypes.map.isRequired,
