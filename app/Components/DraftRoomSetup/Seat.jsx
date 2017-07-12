@@ -29,7 +29,6 @@ const Seat = ({ index, joinDraft, seatOwner }) => {
           />
           {owner &&
             <Heading
-              flex
               tag="h4"
               margin="small"
             >
