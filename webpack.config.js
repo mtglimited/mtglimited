@@ -6,7 +6,7 @@ module.exports = {
   devtool: 'source-map',
   entry: [
     'babel-polyfill',
-    'webpack-dev-server/client?https://localhost:3010',
+    'webpack-dev-server/client?http://localhost:3010',
     'webpack/hot/only-dev-server',
     'react-hot-loader/patch',
     path.join(__dirname, 'app/index.jsx'),
@@ -14,7 +14,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, '/dist/'),
     filename: '[name].js',
-    publicPath: 'https://localhost:3010/',
+    publicPath: 'http://localhost:3010/',
   },
   plugins: [
     new HtmlWebpackPlugin({
