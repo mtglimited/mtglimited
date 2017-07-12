@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
+import { browserHistory } from 'react-router';
 
 import App from 'grommet/components/App';
 import Article from 'grommet/components/Article';
@@ -57,7 +58,7 @@ export default class UniversalLayout extends React.Component {
             justify="between"
             pad="small"
           >
-            <Title path="/">
+            <Title onClick={() => browserHistory.push('/')}>
               MTG LIMITED
             </Title>
             <Menu direction="row">
