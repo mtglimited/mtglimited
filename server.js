@@ -8,7 +8,7 @@ new WebpackDevServer(webpack(config), {
   historyApiFallback: true,
   quiet: false,
   noInfo: false,
-  https: true,
+  https: false,
   headers: { 'Access-Control-Allow-Origin': '*' },
   stats: {
     assets: false,
@@ -24,5 +24,5 @@ new WebpackDevServer(webpack(config), {
     console.log(err);
   }
 
-  console.log('Listening at https://localhost:3010');
+  console.log('Listening at http://localhost:3010');
 });
