@@ -31,7 +31,7 @@ export default class ManageSets extends React.Component {
               key={set}
               onTouchTap={() => browserHistory.push(`/sets/${set}`)}
             >
-              <Anchor path={`/${set}`}>
+              <Anchor>
                 {set}
               </Anchor>
             </ListItem>
