@@ -6,6 +6,7 @@ import ManageSets from 'Containers/ManageSets';
 import ManageSet from 'Containers/ManageSet';
 import NotFound from 'Components/NotFound';
 import Lobby from 'Containers/Lobby';
+import Profile from 'Containers/Profile';
 import Authentication from 'Containers/Authentication';
 
 export default (
@@ -14,6 +15,7 @@ export default (
     <Route path="/sets/:code" component={ManageSet} />
     <Route path="/sets" component={ManageSets} />
     <Route component={Authentication}>
+      <Route path="/profile" component={Profile} />
       <Route path="/rooms/:roomId" component={DraftRoom} />
     </Route>
     <Route path="*" component={NotFound} />

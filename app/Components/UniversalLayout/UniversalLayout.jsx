@@ -124,7 +124,9 @@ export default class UniversalLayout extends React.Component {
                   }
                 >
                   <Box pad="small">
-                    {auth.email}
+                    <Anchor path="/profile">
+                      {auth.displayName} ({auth.email})
+                    </Anchor>
                   </Box>
                   <Anchor href="#" onClick={this.signOut}>
                     Sign Out
