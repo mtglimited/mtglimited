@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import DraftRoomSetup from 'Components/DraftRoomSetup';
 import DraftLive from 'Containers/DraftLive';
+import Box from 'grommet/components/Box';
 
 @firebaseConnect(ownProps => [
   `rooms/${ownProps.params.roomId}`,
@@ -102,7 +103,7 @@ export default class DraftRoom extends React.Component {
     const isLive = room.get('isLive');
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <Box>
         {!isLive &&
           <DraftRoomSetup
             auth={auth}
@@ -128,7 +129,7 @@ export default class DraftRoom extends React.Component {
             auth={auth}
           />
         }
-      </div>
+      </Box>
     );
   }
 }

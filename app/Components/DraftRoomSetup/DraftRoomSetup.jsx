@@ -47,14 +47,14 @@ const DraftRoomSetup = (props) => {
         name={room.get('name')}
         setName={name => firebase.set(`rooms/${roomId}/name`, name)}
       />
-      <Box direction="row" full>
+      <Box direction="row" responsive flex>
         <Box
           colorIndex="light-2"
           pad="medium"
           basis="1/4"
           justify="between"
         >
-          <Box>
+          <Box direction="column" flex>
             <Label size="small">
               Card Set
             </Label>
