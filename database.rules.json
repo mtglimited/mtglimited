@@ -7,6 +7,9 @@
     },
     "seats": {
       ".indexOn": "room"
+    },
+    "rooms": {
+      ".indexOn": "isLive"
     }
   }
 }
