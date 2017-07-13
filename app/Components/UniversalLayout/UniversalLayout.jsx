@@ -11,11 +11,11 @@ import Section from 'grommet/components/Section';
 import Title from 'grommet/components/Title';
 import Image from 'grommet/components/Image';
 import Box from 'grommet/components/Box';
-import Button from 'grommet/components/Button';
 import Footer from 'grommet/components/Footer';
 import Paragraph from 'grommet/components/Paragraph';
 import Menu from 'grommet/components/Menu';
 import Anchor from 'grommet/components/Anchor';
+import Toast from 'grommet/components/Toast';
 
 @firebaseConnect()
 @connect(({ firebase: { auth } }) => ({ auth }))
@@ -34,14 +34,27 @@ export default class UniversalLayout extends React.Component {
     profilePopoverIsOpen: false,
   };
 
-  signIn = async () => {
+  signIn = async (provider) => {
     const { firebase } = this.props;
-    const auth = await firebase.login({
-      provider: 'google',
-      type: 'popup',
-    });
-    const { uid } = auth.user;
-    await firebase.set(`users/${uid}/uid`, uid);
+
+    try {
+      const auth = await firebase.login({
+        provider,
+        type: 'popup',
+      });
+      const { uid } = auth.user;
+      await firebase.set(`users/${uid}/uid`, uid);
+    } catch (error) {
+      const email = error.email;
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        firebase.auth().fetchProvidersForEmail(email).then((providers) => {
+          this.setState({
+            showLoginWarning: true,
+            provider: providers[0],
+          });
+        });
+      }
+    }
   }
 
   signOut = () => {
@@ -50,9 +63,15 @@ export default class UniversalLayout extends React.Component {
 
   render() {
     const { auth } = this.props;
+    const { provider, showLoginWarning } = this.state;
 
     return (
       <App>
+        {showLoginWarning &&
+          <Toast status="warning" onClose={() => this.setState({ showLoginWarning: false })}>
+            Please log in with your {provider} account and link this account
+          </Toast>
+        }
         <Article full>
           <Header
             justify="between"
@@ -61,22 +80,33 @@ export default class UniversalLayout extends React.Component {
             <Title onClick={() => browserHistory.push('/')}>
               MTG LIMITED
             </Title>
-            <Menu direction="row">
-              <Anchor path="/">
-                Home
-              </Anchor>
-              <Anchor path="/sets">
-                Sets
-              </Anchor>
-            </Menu>
-            <Box flex justify="end" direction="row">
+            <Box flex>
+              <Menu direction="row">
+                <Anchor path="/">
+                  Home
+                </Anchor>
+                <Anchor path="/sets">
+                  Sets
+                </Anchor>
+              </Menu>
+            </Box>
+            <Box flex={false} direction="row">
               { auth.isEmpty &&
-                <Button
+                <Menu
+                  responsive
                   label="Sign In"
-                  onClick={this.signIn}
-                  href="#"
-                  primary
-                />
+                  dropAlign={{
+                    right: 'right',
+                    top: 'top',
+                  }}
+                >
+                  <Anchor onClick={() => this.signIn('google')}>
+                    Sign in using Google
+                  </Anchor>
+                  <Anchor onClick={() => this.signIn('facebook')}>
+                    Sign in using Facebook
+                  </Anchor>
+                </Menu>
               }
               { !auth.isEmpty &&
                 <Menu
