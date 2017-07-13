@@ -4,7 +4,9 @@ import { fromJS } from 'immutable';
 import { firebaseConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { browserHistory } from 'react-router';
-import { List, ListItem } from 'material-ui/List';
+import List from 'grommet/components/List';
+import ListItem from 'grommet/components/ListItem';
+import Anchor from 'grommet/components/Anchor';
 
 @firebaseConnect(['/availableSets'])
 @connect(({ firebase }) => ({
@@ -27,9 +29,12 @@ export default class ManageSets extends React.Component {
           {availableSets.map(set => (
             <ListItem
               key={set}
-              primaryText={set}
               onTouchTap={() => browserHistory.push(`/sets/${set}`)}
-            />
+            >
+              <Anchor path={`/${set}`}>
+                {set}
+              </Anchor>
+            </ListItem>
           ))}
         </List>
       </div>
