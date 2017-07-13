@@ -47,15 +47,17 @@ export default class Booster extends React.Component {
       <div style={style.booster}>
         {booster.get('cards').map((card, index) => {
           const cardData = set.getIn(['cards', card.get('data')]);
+          /* eslint-disable */
           return !card.get('pickNumber') && card.get('pickNumber') !== 0 && (
-            <img
+            <img 
               alt={`${card.get('data')}: ${cardData.get('imageName')}`}
               style={style.card}
               src={this.getCardImageUrl(booster.get('set'), cardData.get('imageName'))}
               key={index} // eslint-disable-line
-              onTouchTap={() => pickCard(index)}
+              onClick={() => pickCard(index)}
             />
           );
+          /* eslint-enable */
         })}
       </div>
     );
