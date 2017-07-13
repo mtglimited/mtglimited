@@ -71,26 +71,24 @@ const DraftRoomSetup = (props) => {
             label="Start Draft"
           />
         </Box>
-        <Box flex pad="medium">
-          {!auth.isEmpty &&
-            <Tiles flush={false} fill>
-              {Immutable.Range(0, numberOfSeats).map((index) => {
-                const seatId = room.getIn(['seats', index]);
-                const seat = seatId && seats.get(seatId);
-                const seatOwner = seat && users.get(seat.get('owner'));
+        {!auth.isEmpty &&
+          <Tiles flush={false} fill>
+            {Immutable.Range(0, numberOfSeats).map((index) => {
+              const seatId = room.getIn(['seats', index]);
+              const seat = seatId && seats.get(seatId);
+              const seatOwner = seat && users.get(seat.get('owner'));
 
-                return (
-                  <Seat
-                    key={seatId || index}
-                    index={index}
-                    seatOwner={seatOwner}
-                    joinDraft={joinDraft}
-                  />
-                );
-              })}
-            </Tiles>
-          }
-        </Box>
+              return (
+                <Seat
+                  key={seatId || index}
+                  index={index}
+                  seatOwner={seatOwner}
+                  joinDraft={joinDraft}
+                />
+              );
+            })}
+          </Tiles>
+        }
       </Box>
     </Box>
   );

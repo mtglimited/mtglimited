@@ -1,27 +1,30 @@
 import React from 'react';
-import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { firebaseConnect } from 'react-redux-firebase';
 import { browserHistory } from 'react-router';
+import { firebaseConnect } from 'react-redux-firebase';
 
-import List from 'grommet/components/List';
-import ListItem from 'grommet/components/ListItem';
 import Button from 'grommet/components/Button';
 import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
 import Section from 'grommet/components/Section';
 import Box from 'grommet/components/Box';
+import CheckBox from 'grommet/components/CheckBox';
+
+import Rooms from 'Containers/Rooms';
 
 const DEFAULT_SET = 'HOU';
 
-@firebaseConnect(['rooms'])
-@connect(({ firebase: { auth, data: { rooms } } }) => ({ auth, rooms }))
+@firebaseConnect()
+@connect(({ firebase: { auth } }) => ({ auth }))
 export default class Lobby extends React.Component {
   static propTypes = {
-    rooms: PropTypes.object,
     firebase: PropTypes.shape().isRequired,
     auth: PropTypes.shape().isRequired,
+  };
+
+  state = {
+    showMyRooms: false,
   };
 
   getName = () => Math.random().toString(36).substr(7).toUpperCase();
@@ -35,6 +38,7 @@ export default class Lobby extends React.Component {
       name,
       seats: false,
       set: DEFAULT_SET,
+      isLive: false,
     });
 
     browserHistory.push(`/rooms/${ref.key}`);
@@ -42,7 +46,7 @@ export default class Lobby extends React.Component {
 
   render() {
     const { auth } = this.props;
-    const rooms = fromJS(this.props.rooms || {});
+    const { showMyRooms } = this.state;
 
     return (
       <Section pad="small">
@@ -56,29 +60,20 @@ export default class Lobby extends React.Component {
             direction="row"
           >
             { !auth.isEmpty &&
-            <Button
-              primary
-              label="Create New Room"
-              onClick={this.createRoom}
-            />
-          }
+              <Button
+                primary
+                label="Create New Room"
+                onClick={this.createRoom}
+              />
+            }
           </Box>
         </Header>
-        {rooms &&
-          <List>
-            {rooms.count() === 0 &&
-              <p>There are no current open drafts. Create a new one!</p>
-            }
-            {rooms.map((room, key) => (
-              <ListItem
-                key={key} // eslint-disable-line
-                onClick={() => browserHistory.push(`/rooms/${key}`)}
-              >
-                {room.get('name')}
-              </ListItem>
-            )).valueSeq()}
-          </List>
-        }
+        <CheckBox
+          checked={showMyRooms}
+          label="Show my Drafts"
+          onChange={() => this.setState({ showMyRooms: !showMyRooms })}
+        />
+        <Rooms owner={auth.uid} showMyRooms={showMyRooms} />
       </Section>
     );
   }
