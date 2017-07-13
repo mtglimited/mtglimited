@@ -51,14 +51,12 @@ export default class Lobby extends React.Component {
     return (
       <Section pad="small">
         <Header>
-          <Heading>
-            Lobby
-          </Heading>
-          <Box
-            justify="end"
-            flex
-            direction="row"
-          >
+          <Box flex="grow">
+            <Heading>
+              Lobby
+            </Heading>
+          </Box>
+          <Box>
             { !auth.isEmpty &&
               <Button
                 primary
