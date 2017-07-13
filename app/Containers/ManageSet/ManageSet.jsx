@@ -34,10 +34,11 @@ export default class ManageSet extends React.Component {
           fill
           flush={false}
         >
-          {set.get('cards').map(card => card && (
+          {set.get('cards').map((card, index) => card && (
             <Tile>
               <Image
-                caption={card.get('imageName')}
+                alt={`${index}: ${card.get('name')}`}
+                caption={card.get('name')}
                 size="small"
                 src={`${baseUrl}/${code}/${card.get('imageName')}.jpeg`}
                 key={card.imageName}

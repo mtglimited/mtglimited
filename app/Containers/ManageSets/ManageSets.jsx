@@ -12,7 +12,7 @@ import { List, ListItem } from 'material-ui/List';
 }))
 export default class ManageSets extends React.Component {
   static propTypes = {
-    availableSets: PropTypes.shape().isRequired,
+    availableSets: PropTypes.shape(),
   };
 
   render() {
@@ -26,6 +26,7 @@ export default class ManageSets extends React.Component {
         <List>
           {availableSets.map(set => (
             <ListItem
+              key={set}
               primaryText={set}
               onTouchTap={() => browserHistory.push(`/sets/${set}`)}
             />
