@@ -13,6 +13,16 @@ import Tiles from 'grommet/components/Tiles';
 import { SEAT_COUNT_OPTIONS } from './constants';
 import Seat from './Seat';
 
+const getSetOptionLabel = (name, code) => (
+  <span>
+    <i
+      className={`ss ss-${code.toLowerCase()}`}
+      style={{ marginRight: 5 }}
+    />
+    {name}
+  </span>
+);
+
 const DraftRoomSetup = (props) => {
   const {
       firebase,
@@ -27,7 +37,7 @@ const DraftRoomSetup = (props) => {
     } = props;
   const numberOfSeats = room.get('numberOfSeats') || SEAT_COUNT_OPTIONS.get(0);
   const setOptions = sets.map(set => ({
-    label: set.get('name'),
+    label: getSetOptionLabel(set.get('name'), set.get('code')),
     value: set.get('code'),
   })).toArray();
 
@@ -56,8 +66,8 @@ const DraftRoomSetup = (props) => {
           </Box>
           <Box>
             <Label size="small">
-                Number of Players
-              </Label>
+              Number of Players
+            </Label>
             <Select
               inline
               options={SEAT_COUNT_OPTIONS.toArray()}
