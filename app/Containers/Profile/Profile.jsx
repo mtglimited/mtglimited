@@ -38,8 +38,8 @@ export default class Authentication extends React.Component {
     this.forceUpdate();
   }
 
-  disconnectProvider = (providerId) => {
-    this.props.firebase.auth().currentUser.unlink(providerId);
+  disconnectProvider = async (providerId) => {
+    await this.props.firebase.auth().currentUser.unlink(providerId);
     this.forceUpdate();
   }
 
