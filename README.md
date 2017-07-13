@@ -7,7 +7,7 @@ In the root of the repository, run
 yarn start
 ```
 
-To run the firebase functinos locally, open another terminal tab and run
+To run the firebase functions locally, open another terminal tab and run
 ```
 cd functions
 firebase serve --only functions
