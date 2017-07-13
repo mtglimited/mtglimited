@@ -11,10 +11,10 @@ import Authentication from 'Containers/Authentication';
 export default (
   <Route path="/" component={App} >
     <IndexRoute component={Lobby} />
+    <Route path="/sets/:code" component={ManageSet} />
+    <Route path="/sets" component={ManageSets} />
     <Route component={Authentication}>
       <Route path="/rooms/:roomId" component={DraftRoom} />
-      <Route path="/sets/:code" component={ManageSet} />
-      <Route path="/sets" component={ManageSets} />
     </Route>
     <Route path="*" component={NotFound} />
   </Route>
