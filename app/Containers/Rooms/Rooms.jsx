@@ -18,11 +18,11 @@ import ListItem from 'grommet/components/ListItem';
   },
 ])
 @connect(({ firebase: { data: { rooms } } }) => ({ rooms }))
-export default class Lobby extends React.Component {
+export default class Rooms extends React.Component {
   static propTypes = {
     rooms: PropTypes.object,
     showMyRooms: PropTypes.bool.isRequired,
-    owner: PropTypes.string.isRequired,
+    owner: PropTypes.string,
   };
 
   render() {
@@ -42,6 +42,10 @@ export default class Lobby extends React.Component {
             key={key} // eslint-disable-line
             onClick={() => browserHistory.push(`/rooms/${key}`)}
           >
+            <i
+              className={`ss ss-${room.get('set').toLowerCase()}`}
+              style={{ marginRight: 15 }}
+            />
             {room.get('name')}
           </ListItem>
         )).valueSeq()}
