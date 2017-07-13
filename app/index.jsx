@@ -1,13 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import Root from 'Containers/Root';
 import 'scss/index.scss';
-
 import thirdparty from './thirdparty';
 
-injectTapEventPlugin();
 thirdparty();
 
 const rootEl = document.getElementById('root');
