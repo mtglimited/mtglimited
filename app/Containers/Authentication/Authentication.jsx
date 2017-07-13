@@ -20,22 +20,20 @@ export default class Authentication extends React.Component {
     children: PropTypes.element.isRequired,
   };
 
-  static defaultProps = {
-    auth: undefined,
-  };
-
   render() {
     const { auth } = this.props;
 
-    if (auth === null) {
-      browserHistory.replace('/');
-    } else if (!auth) {
+    if (!auth.isLoaded) {
       return (
         <div style={style}>
           <CircularProgress size={80} thickness={5} />
         </div>
       );
+    } else if (auth.isEmpty) {
+      browserHistory.replace('/');
+      return null;
     }
+
     return this.props.children;
   }
 }
