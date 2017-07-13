@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'grommet/components/Button';
 import Immutable from 'immutable';
-import CircularProgress from 'material-ui/CircularProgress';
+import Spinning from 'grommet/components/icons/Spinning';
 import Seat from 'Containers/Seat';
 import axios from 'axios';
 import { isLoaded } from 'react-redux-firebase';
@@ -40,7 +40,7 @@ export default class DraftLive extends React.Component {
     const seatId = seats.findKey(s => s.get('owner') === auth.uid);
     const seat = seats.get(seatId);
     if (!isLoaded()) {
-      return <CircularProgress />;
+      return <Spinning />;
     }
     const boosterQueue = seat.get('boosterQueue', new Immutable.Map());
     const packNumber = seat.get('packNumber');
@@ -51,10 +51,10 @@ export default class DraftLive extends React.Component {
       <div>
         <h1>Draft Live</h1>
         { canOpenPack &&
-          <RaisedButton
+          <Button
+            primary
             label={`Open a ${boosterSet} booster pack`}
-            secondary
-            onTouchTap={this.openBoosterPack}
+            onClick={this.openBoosterPack}
           />
         }
         <Seat
