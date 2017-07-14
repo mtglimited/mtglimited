@@ -96,26 +96,87 @@ const Home = () => (
       <Headline margin="none">
         How does it work?
       </Headline>
-      <Tiles fill>
-        <Tile basis="1/3">
-          <Card
+    </Section>
+    <Section
+      justify="center"
+      align="center"
+      colorIndex="grey-4"
+    >
+      <Hero
+        backgroundColorIndex="dark"
+      >
+        <Box
+          direction="row"
+          justify="center"
+          align="center"
+        >
+          <Box
+            basis="1/2"
             align="center"
-            heading={<Heading tag="h2" align="center">Gather your friends</Heading>}
-          />
-        </Tile>
-        <Tile basis="1/3">
-          <Card
+            pad="medium"
+          >
+            <Image
+              src="https://storage.googleapis.com/mtglimited-154323.appspot.com/img/draft-room.png"
+              fit="cover"
+              full
+            />
+          </Box>
+          <Box
+            basis="1/2"
+            align="start"
+            pad="medium"
+          >
+            <Heading margin="none">
+              1. Create a room
+            </Heading>
+          </Box>
+        </Box>
+      </Hero>
+    </Section>
+    <Section
+      justify="center"
+      align="center"
+      colorIndex="grey-4"
+    >
+      <Hero
+        backgroundColorIndex="dark"
+      >
+        <Box
+          direction="row"
+          justify="center"
+          align="center"
+        >
+          <Box
+            basis="1/2"
+            align="start"
+            pad="medium"
+          >
+            <Heading margin="none">
+              2. Draft your deck
+            </Heading>
+          </Box>
+          <Box
+            basis="1/2"
             align="center"
-            heading={<Heading tag="h2" align="center">Create a room</Heading>}
-          />
-        </Tile>
-        <Tile basis="1/3">
-          <Card
-            align="center"
-            heading={<Heading tag="h2" align="center">Draft your deck</Heading>}
-          />
-        </Tile>
-      </Tiles>
+            pad="medium"
+          >
+            <Image
+              src="https://storage.googleapis.com/mtglimited-154323.appspot.com/img/draft-live.png"
+              fit="cover"
+              full
+            />
+          </Box>
+        </Box>
+      </Hero>
+    </Section>
+    <Section
+      pad="large"
+      justify="center"
+      align="center"
+    >
+      <Headline margin="none" align="center">
+        3. Build your deck from the cards you already own!
+      </Headline>
     </Section>
   </Article>
 );
