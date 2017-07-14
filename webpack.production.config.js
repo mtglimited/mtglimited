@@ -70,7 +70,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx', 'scss'],
+    extensions: ['.js', '.jsx', '.scss', '.json'],
     modules: [
       path.resolve(__dirname, 'app'),
       'node_modules',
