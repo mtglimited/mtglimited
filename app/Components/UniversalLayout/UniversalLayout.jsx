@@ -38,6 +38,7 @@ export default class UniversalLayout extends React.Component {
     const { firebase } = this.props;
 
     try {
+      await firebase.logout();
       const auth = await firebase.login({
         provider,
         type: 'popup',
@@ -78,12 +79,12 @@ export default class UniversalLayout extends React.Component {
             pad="small"
           >
             <Title onClick={() => browserHistory.push('/')}>
-              MTG LIMITED
+              MTGLIMITED
             </Title>
             <Box flex>
               <Menu direction="row">
-                <Anchor path="/">
-                  Home
+                <Anchor path="/lobby">
+                  Lobby
                 </Anchor>
                 <Anchor path="/sets">
                   Sets
@@ -91,15 +92,22 @@ export default class UniversalLayout extends React.Component {
               </Menu>
             </Box>
             <Box flex={false} direction="row">
-              { auth.isEmpty &&
+              { auth.isAnonymous &&
                 <Menu
                   responsive
-                  label="Sign In"
                   dropAlign={{
                     right: 'right',
                     top: 'top',
                   }}
+                  icon={
+                    <Image
+                      src={auth.photoURL}
+                      size="thumb"
+                      style={{ borderRadius: 12 }}
+                    />
+                  }
                 >
+                  Welcome, Guest!
                   <Anchor onClick={() => this.signIn('google')}>
                     Sign in using Google
                   </Anchor>
@@ -108,7 +116,7 @@ export default class UniversalLayout extends React.Component {
                   </Anchor>
                 </Menu>
               }
-              { !auth.isEmpty &&
+              { !auth.isAnonymous &&
                 <Menu
                   responsive
                   dropAlign={{
@@ -125,17 +133,17 @@ export default class UniversalLayout extends React.Component {
                 >
                   <Box pad="small">
                     <Anchor path="/profile">
-                      {auth.displayName} ({auth.email})
+                      {auth.displayName}&nbsp;({auth.email})
+                    </Anchor>
+                    <Anchor href="#" onClick={this.signOut}>
+                      Sign Out
                     </Anchor>
                   </Box>
-                  <Anchor href="#" onClick={this.signOut}>
-                    Sign Out
-                  </Anchor>
                 </Menu>
               }
             </Box>
           </Header>
-          <Section primary flex>
+          <Section primary flex pad="none">
             {this.props.children}
           </Section>
           <Footer
