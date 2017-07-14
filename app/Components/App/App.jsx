@@ -1,15 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import UniversalLayout from 'Components/UniversalLayout';
+import Authentication from 'Containers/Authentication';
 
 const propTypes = {
   children: PropTypes.element.isRequired,
 };
 
 const App = ({ children }) => (
-  <UniversalLayout>
-    { children }
-  </UniversalLayout>
+  <Authentication>
+    <UniversalLayout>
+      { children }
+    </UniversalLayout>
+  </Authentication>
 );
 
 App.propTypes = propTypes;

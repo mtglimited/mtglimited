@@ -84,9 +84,16 @@ const DraftRoomSetup = (props) => {
         {!auth.isEmpty &&
           <Tiles flush={false} fill>
             {Immutable.Range(0, numberOfSeats).map((index) => {
-              const seatId = room.getIn(['seats', index]);
-              const seat = seatId && seats.get(seatId);
-              const seatOwner = seat && users.get(seat.get('owner'));
+              const seatId = room.getIn(['seats', String(index)]);
+              let seat;
+              let seatOwner;
+
+              if (seatId) {
+                seat = seats && seatId && seats.get(seatId);
+                seatOwner = (seat && users.get(seat.get('owner'))) || new Immutable.Map({
+                  displayName: 'Guest',
+                });
+              }
 
               return (
                 <Seat

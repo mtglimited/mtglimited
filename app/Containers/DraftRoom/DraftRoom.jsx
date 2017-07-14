@@ -46,19 +46,17 @@ export default class DraftRoom extends React.Component {
   getSeatKey = () => this.props.seats && this.props.seats
       .findKey(s => s.get('owner') === this.props.auth.uid);
 
-  leaveDraft = () => {
-    const { firebase, params, auth, seats } = this.props;
+  leaveDraft = async () => {
+    const { firebase, params, room } = this.props;
     const seatKey = this.getSeatKey();
 
     if (!seatKey) {
       return;
     }
-    const seat = seats.get(seatKey);
-    const userId = auth.uid;
+    const seatIndex = room.get('seats').findKey(seatId => seatId === seatKey);
 
-    firebase.remove(`seats/${seatKey}`);
-    firebase.remove(`users/${userId}/seat`);
-    firebase.remove(`rooms/${params.roomId}/seats/${seat.get('roomSeatId')}`);
+    await firebase.remove(`seats/${seatKey}`);
+    await firebase.remove(`rooms/${params.roomId}/seats/${seatIndex}`);
   }
 
 
@@ -72,6 +70,7 @@ export default class DraftRoom extends React.Component {
     const seatRef = await firebase.push('seats', {
       owner: userId,
       room: params.roomId,
+
     });
 
     firebase.set(`rooms/${roomId}/seats/${index}`, seatRef.key);
@@ -109,11 +108,10 @@ export default class DraftRoom extends React.Component {
             auth={auth}
             users={users}
             room={room}
-            seats={seats}
+            seats={seats || fromJS({})}
             sets={sets}
             roomId={params.roomId}
             firebase={firebase}
-            leaveDraft={this.leaftDraft}
             joinDraft={this.joinDraft}
             startDraft={this.startDraft}
           />
