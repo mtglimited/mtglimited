@@ -136,7 +136,6 @@ const Home = () => (
     <Section
       justify="center"
       align="center"
-      colorIndex="grey-4"
     >
       <Hero
         backgroundColorIndex="dark"
@@ -173,6 +172,7 @@ const Home = () => (
       pad="large"
       justify="center"
       align="center"
+      colorIndex="grey-4"
     >
       <Headline margin="none" align="center">
         3. Build your deck from the cards you already own!
