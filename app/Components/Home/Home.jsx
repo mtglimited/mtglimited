@@ -100,21 +100,18 @@ const Home = () => (
         <Tile basis="1/3">
           <Card
             align="center"
-            thumbnail={<CurrencyIcon size="large" />}
             heading={<Heading tag="h2" align="center">Gather your friends</Heading>}
           />
         </Tile>
         <Tile basis="1/3">
           <Card
             align="center"
-            thumbnail={<TriggerIcon size="large" />}
             heading={<Heading tag="h2" align="center">Create a room</Heading>}
           />
         </Tile>
         <Tile basis="1/3">
           <Card
             align="center"
-            thumbnail={<CubesIcon size="large" />}
             heading={<Heading tag="h2" align="center">Draft your deck</Heading>}
           />
         </Tile>
