@@ -57,12 +57,15 @@ export default class Lobby extends React.Component {
             </Heading>
           </Box>
           <Box>
-            { !auth.isEmpty &&
+            { !auth.isAnonymous &&
               <Button
                 primary
                 label="Create New Room"
                 onClick={this.createRoom}
               />
+            }
+            { auth.isAnonymous &&
+              <p>Sign in to create a draft</p>
             }
           </Box>
         </Header>
