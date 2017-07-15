@@ -28,11 +28,11 @@ export default class ManageSets extends React.Component {
         <List>
           {availableSets.map(set => (
             <ListItem
-              key={set}
-              onClick={() => browserHistory.push(`/sets/${set}`)}
+              key={set.get('key')}
+              onClick={() => browserHistory.push(`/sets/${set.get('key')}`)}
             >
               <Anchor>
-                {set}
+                {set.get('name')}
               </Anchor>
             </ListItem>
           ))}
