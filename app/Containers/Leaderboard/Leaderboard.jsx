@@ -5,14 +5,11 @@ import { browserHistory } from 'react-router';
 import { firebaseConnect } from 'react-redux-firebase';
 import { fromJS } from 'immutable';
 
-import Button from 'grommet/components/Button';
-import Header from 'grommet/components/Header';
 import Heading from 'grommet/components/Heading';
-import Section from 'grommet/components/Section';
 import Box from 'grommet/components/Box';
-import CheckBox from 'grommet/components/CheckBox';
 import List from 'grommet/components/List';
 import Value from 'grommet/components/Value';
+import Image from 'grommet/components/Image';
 import ListItem from 'grommet/components/ListItem';
 
 @firebaseConnect(() => [
@@ -21,11 +18,10 @@ import ListItem from 'grommet/components/ListItem';
 ])
 @connect(state => ({
   users: state.firebase.data.users && fromJS(state.firebase.data.users),
-  experience: state.firebase.data.experience && fromJS(state.firebase.data.experience)
+  experience: state.firebase.data.experience && fromJS(state.firebase.data.experience),
 }))
 export default class Leaderboard extends React.Component {
   static propTypes = {
-    firebase: PropTypes.shape().isRequired,
     users: PropTypes.shape(),
     experience: PropTypes.shape(),
   };
@@ -34,62 +30,74 @@ export default class Leaderboard extends React.Component {
   render() {
     const { users, experience } = this.props;
     if (users && experience) {
-
-      var userScores = [];
-      users.forEach(function(userValue, userKey){
-
-          var scoreTotal = 0;
-          experience.forEach(function(experienceValue,experinceKey){
-            if(userKey == experienceValue.get('user')){
-              scoreTotal+= experienceValue.get('score');
-            }
-        })
-          userScores.push({
-            userKey: userKey,
-            name:userValue.get('displayName'),
-            score:scoreTotal
-          });
-      })
-
-      userScores.sort(function(a, b) {
-        return parseFloat(b.score) - parseFloat(a.score);
+      const userScores = [];
+      users.forEach((userValue, userKey) => {
+        let scoreTotal = 0;
+        experience.forEach((experienceValue) => {
+          if (userKey === experienceValue.get('user')) {
+            scoreTotal += experienceValue.get('score');
+          }
+        });
+        userScores.push({
+          userKey,
+          avatar: userValue.get('avatarUrl'),
+          name: userValue.get('displayName'),
+          score: scoreTotal,
+        });
       });
 
-      debugger;
+      userScores.sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
+
       return (
         <div>
-          <Heading strong={true}
+          <Heading
+            strong
             uppercase={false}
             truncate={false}
-            align='center'>
+            align="center"
+          >
               Leaderboard
           </Heading>
           <List>
-              {userScores.map((user, key) => {
-                return (
-                  <ListItem key={user.userKey} onClick={() => browserHistory.push(`/users/${user.userKey}`)}>
-                    <Box direction='row'
-                      justify='start'
-                      flex='grow'
-                      align='center'
-                      wrap={true}>
-                      <Value value={user.name} />
-                    </Box>
-                    <Box direction='row'
-                      justify='end'
-                      align='center'
-                      wrap={true}>
-                      <Value value={user.score}
-                        colorIndex='accent-1' />
-                    </Box>
-                  </ListItem>
-                );
-              })}
+            {userScores.map(user => (
+              <ListItem key={user.userKey} onClick={() => browserHistory.push(`/users/${user.userKey}`)}>
+              <Box
+                  direction="row"
+                  justify="start"
+                  align="center"
+                  wrap="true"
+                >
+                 <Image
+                  size="thumb"
+                  src={user.avatar}
+                  style={{ borderRadius: 12 }}/>
+                </Box>
+                <Box
+                  direction="row"
+                  justify="start"
+                  flex="grow"
+                  align="center"
+                  wrap="true"
+                >
+                  <Value value={user.name} />
+                </Box>
+                <Box
+                  direction="row"
+                  justify="end"
+                  align="center"
+                  wrap="true"
+                >
+                  <Value
+                    value={user.score}
+                    colorIndex="accent-1"
+                  />
+                </Box>
+              </ListItem>
+                ))}
           </List>
         </div>
       );
-    } else {
-      return <h2>Loading...</h2>;
     }
+    return <h2>Loading...</h2>;
   }
 }
