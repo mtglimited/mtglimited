@@ -74,12 +74,6 @@
     "type": "git",
     "url": "git+https://github.com/msholty-fd/mtglimited.git"
   },
-  "git": {
-    "scripts": {
-      "pre-commit": "./hooks/pre-commit.js",
-      "commit-msg": "./node_modules/.bin/validate-commit-msg $1"
-    }
-  },
   "jest": {
     "collectCoverage": true,
     "modulePaths": [
