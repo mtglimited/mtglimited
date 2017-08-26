@@ -24,7 +24,6 @@ class Dashboard extends React.Component {
     const questRef = await this.props.firebase.push('/quests', {
       user: this.props.firebase.auth().currentUser.uid,
     });
-    debugger;
     browserHistory.push(`/quests/${questRef.key}`);
   }
 

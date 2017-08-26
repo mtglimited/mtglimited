@@ -87,6 +87,9 @@ export default class UniversalLayout extends React.Component {
                 <Anchor path="/dashboard">
                   Dashboard
                 </Anchor>
+                <Anchor path="/leaderboard">
+                  Leaderboard
+                </Anchor>
               </Menu>
             </Box>
             <Box flex={false} direction="row">
