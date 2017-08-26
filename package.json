@@ -47,6 +47,7 @@
     "eslint-plugin-import": "^2.3.0",
     "eslint-plugin-jsx-a11y": "^5.0.3",
     "eslint-plugin-react": "^7.0.1",
+    "firebase-admin": "^5.2.1",
     "git-rev": "^0.2.1",
     "git-scripts": "^0.2.1",
     "html-webpack-plugin": "^2.25.0",
@@ -72,12 +73,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/msholty-fd/mtglimited.git"
-  },
-  "git": {
-    "scripts": {
-      "pre-commit": "./hooks/pre-commit.js",
-      "commit-msg": "./node_modules/.bin/validate-commit-msg $1"
-    }
   },
   "jest": {
     "collectCoverage": true,
