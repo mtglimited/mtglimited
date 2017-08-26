@@ -8,6 +8,7 @@ import NotFound from 'Components/NotFound';
 import Lobby from 'Containers/Lobby';
 import Home from 'Components/Home';
 import Profile from 'Containers/Profile';
+import Leaderboard from 'Containers/Leaderboard';
 
 export default (
   <Route path="/" component={App} >
@@ -17,6 +18,7 @@ export default (
     <Route path="/sets" component={ManageSets} />
     <Route path="/profile" component={Profile} />
     <Route path="/rooms/:roomId" component={DraftRoom} />
+    <Route path="/leaderboard" component={Leaderboard} />
     <Route path="*" component={NotFound} />
   </Route>
 );
