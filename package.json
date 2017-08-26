@@ -1,9 +1,9 @@
 {
-  "name": "mtglimited",
+  "name": "voluntorio.us",
   "version": "0.0.1",
-  "description": "MTGLIMITED front-end application",
+  "description": "voluntorious frontend",
   "main": "server.js",
-  "author": "Michael Sholty",
+  "author": "Michael Sholty, Thomas Storey, Kurtis Schlienger, Vishesh Bhalla",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.16.2",
