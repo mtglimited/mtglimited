@@ -37,3 +37,5 @@ npm-debug.log
 ngrok
 
 .DS_Store
+
+package-lock.json
