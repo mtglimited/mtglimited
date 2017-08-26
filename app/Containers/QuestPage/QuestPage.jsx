@@ -13,13 +13,13 @@ import TextInput from 'grommet/components/TextInput';
 }))
 class QuestPage extends React.Component {
   static propTypes = {
-    id: PropTypes.string,
+    params: PropTypes.string,
     quest: PropTypes.shape(),
     firebase: PropTypes.shape(),
   };
 
-  updateLocation = (event) => {
-    this.props.firebase.push(`/quests/${this.props.id}/location`, event.target.value);
+  update = (property, value) => {
+    this.props.firebase.set(`/quests/${this.props.params.id}/${property}`, value);
   }
 
   render() {
@@ -31,13 +31,16 @@ class QuestPage extends React.Component {
       <div>
         <h2>Quest Details Page </h2>
         <h3>Date: {quest.get('date')}</h3>
-        <TextInput
+        Location: <TextInput
           id="location"
           value={quest.get('location')}
-          onDOMChange={event => this.updateLocation(event)}
+          onDOMChange={event => this.update('location', event.target.value)}
+        /><br />
+        Name: <TextInput
+          id="location"
+          value={quest.get('name')}
+          onDOMChange={event => this.update('name', event.target.value)}
         />
-        <h3>Location: {quest.get('location')}</h3>
-        <h3>Name: {quest.get('name')}</h3>
       </div>
     );
   }
