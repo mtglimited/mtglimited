@@ -82,6 +82,13 @@ export default class UniversalLayout extends React.Component {
             <Title onClick={() => browserHistory.push('/')}>
               voluntorious
             </Title>
+            <Box flex>
+              <Menu direction="row">
+                <Anchor path="/dashboard">
+                  Dashboard
+                </Anchor>
+              </Menu>
+            </Box>
             <Box flex={false} direction="row">
               { auth.isAnonymous &&
                 <Menu

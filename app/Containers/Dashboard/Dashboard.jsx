@@ -20,10 +20,12 @@ class Dashboard extends React.Component {
     firebase: PropTypes.shape(),
   };
 
-  createQuest = () => {
-    this.props.firebase.push('/quests', {
-      foo: 'hello',
+  createQuest = async () => {
+    const questRef = await this.props.firebase.push('/quests', {
+      user: this.props.firebase.auth().currentUser.uid,
     });
+    debugger;
+    browserHistory.push(`/quests/${questRef.key}`);
   }
 
   render() {
