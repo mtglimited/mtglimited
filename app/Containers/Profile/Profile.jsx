@@ -86,11 +86,13 @@ export default class Authentication extends React.Component {
         <Box
           align="end"
         >
-          <AnnotatedMeter legend={true}
-          type='circle'
-          size='medium'
-          max={50}
-          series={[{"label": "Completed", "value": 20, "colorIndex": "graph-1"}, {"label": "Remaining", "value": 30, "colorIndex": "graph-2"}]} />
+          <AnnotatedMeter
+            legend
+            type="circle"
+            size="medium"
+            max={50}
+            series={[{ label: 'Completed', value: 20, colorIndex: 'graph-1' }, { label: 'Remaining', value: 30, colorIndex: 'graph-2' }]}
+          />
         </Box>
       </div>
     );
