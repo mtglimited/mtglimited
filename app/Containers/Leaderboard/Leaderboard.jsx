@@ -61,16 +61,17 @@ export default class Leaderboard extends React.Component {
           <List>
             {userScores.map(user => (
               <ListItem key={user.userKey} onClick={() => browserHistory.push(`/users/${user.userKey}`)}>
-              <Box
+                <Box
                   direction="row"
                   justify="start"
                   align="center"
                   wrap="true"
                 >
-                 <Image
-                  size="thumb"
-                  src={user.avatar}
-                  style={{ borderRadius: 12 }}/>
+                  <Image
+                    size="thumb"
+                    src={user.avatar}
+                    style={{ borderRadius: 12 }}
+                  />
                 </Box>
                 <Box
                   direction="row"
