@@ -79,18 +79,8 @@ export default class UniversalLayout extends React.Component {
             pad="small"
           >
             <Title onClick={() => browserHistory.push('/')}>
-              MTGLIMITED
+              voluntorious
             </Title>
-            <Box flex>
-              <Menu direction="row">
-                <Anchor path="/lobby">
-                  Lobby
-                </Anchor>
-                <Anchor path="/sets">
-                  Sets
-                </Anchor>
-              </Menu>
-            </Box>
             <Box flex={false} direction="row">
               { auth.isAnonymous &&
                 <Menu
@@ -158,7 +148,7 @@ export default class UniversalLayout extends React.Component {
               pad={{ between: 'medium' }}
             >
               <Paragraph margin="none">
-                © 2017 MTGLIMITED
+                © 2017 voluntorious
               </Paragraph>
             </Box>
           </Footer>
