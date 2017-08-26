@@ -16,6 +16,7 @@ import Paragraph from 'grommet/components/Paragraph';
 import Menu from 'grommet/components/Menu';
 import Anchor from 'grommet/components/Anchor';
 import Toast from 'grommet/components/Toast';
+import UserIcon from 'grommet/components/icons/base/User';
 
 @firebaseConnect()
 @connect(({ firebase: { auth } }) => ({ auth }))
@@ -81,6 +82,16 @@ export default class UniversalLayout extends React.Component {
             <Title onClick={() => browserHistory.push('/')}>
               voluntorious
             </Title>
+            <Box flex>
+              <Menu direction="row">
+                <Anchor path="/dashboard">
+                  Dashboard
+                </Anchor>
+                <Anchor path="/leaderboard">
+                  Leaderboard
+                </Anchor>
+              </Menu>
+            </Box>
             <Box flex={false} direction="row">
               { auth.isAnonymous &&
                 <Menu
@@ -90,19 +101,16 @@ export default class UniversalLayout extends React.Component {
                     top: 'top',
                   }}
                   icon={
-                    <Image
-                      src={auth.photoURL}
-                      size="thumb"
-                      style={{ borderRadius: 12 }}
-                    />
+                    <UserIcon />
                   }
+                  label="Sign in"
                 >
-                  Welcome, Guest!
+
                   <Anchor onClick={() => this.signIn('google')}>
-                    Sign in using Google
+                    Sign in with Google
                   </Anchor>
                   <Anchor onClick={() => this.signIn('facebook')}>
-                    Sign in using Facebook
+                    Sign in with Facebook
                   </Anchor>
                 </Menu>
               }
