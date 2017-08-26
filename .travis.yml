@@ -1,10 +1,12 @@
 language: node_js
 node_js:
-- "8"
+- '8'
 notifications:
-    slack: feathr:J4UGTgSR6Q2XGKY04XfH7F0w
+  slack: feathr:J4UGTgSR6Q2XGKY04XfH7F0w
 before_script: yarn lint
 script: yarn build
 deploy:
   provider: firebase
   skip_cleanup: true
+  token:
+    secure: FEMPm5QuL2zPhmAUVsw+TFPVltSQ4el0gzsP2k22nbDYsU8RowrCJRNM2xE659VloOstIUSffDMNG5T5Qxo0T40ukr+4+N7fZAWxFnrSFdtqvAaWTDWKcR2hDwpLB3Ap7KdK+IcbWSkGlwQ1kul9hNJl+TK9zhfkKfnOCwQ59m+tFhO05nRFJCzGo9G/IA8bue1kJEE/9fInxyzEQLJzI9xED+drMQ90y+UZiPSNKiVLqYVzaDY0Cc0IR617rQWFpdR7bNevaooYKJVlt7c1HxCeo6aFE0sasbDJttWB7a4RSL0qD8iuo+Ufzq9Hsly4mQfU1OftkQoEEej0Kpavab5817mLpAQ7KaeIVRY8i96CT0DEO7E2MUa37iRA8AR/sAZst3FgPQqxzyZ71t0fBigrcpZb7/YiKNXMbQ6bGTvzMjby3KNKz7W+kteAcxaJy1mCEG6y1W8lZWn6MWxUzY5sKo12YdUA29tdNQcGnTDnzxa+XV6Lpjj//WXmIlxBIE1ZmDxJZy/qkdE4PTk2CHEEHfktuNr85mbWnuv/PCqvCCH8o/iRh8VNFcx9RGp2LeBUCwvjAZANsTy7foHQ2E7KeMCRNwsPZPjRfSb/c2MKsKaNiHH5TmBtlNHyT17OsSNbMqyV+2Mj/SkLO7Zhi5y8bhA13XNNbuJLKDeoC2s=
