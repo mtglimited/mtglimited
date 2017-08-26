@@ -12,7 +12,6 @@ import Tab from 'grommet/components/Tab';
 import Article from 'grommet/components/Article';
 import Header from 'grommet/components/Header';
 import Spinning from 'grommet/components/icons/Spinning';
-import Box from 'grommet/components/Box';
 
 
 const style = {
