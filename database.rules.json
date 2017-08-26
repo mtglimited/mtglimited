@@ -2,14 +2,8 @@
   "rules": {
     ".read": "auth != null",
     ".write": "auth != null",
-    "sets": {
-      ".write": false
-    },
-    "seats": {
-      ".indexOn": "room"
-    },
-    "rooms": {
-      ".indexOn": "isLive"
+    "experience": {
+      ".indexOn": "user"
     }
   }
 }
