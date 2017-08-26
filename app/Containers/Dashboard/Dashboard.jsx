@@ -5,12 +5,15 @@ import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import { browserHistory } from 'react-router';
 import Button from 'grommet/components/Button';
-import List from 'grommet/components/List';
-import ListItem from 'grommet/components/ListItem';
+import Tile from 'grommet/components/Tile';
+import Card from 'grommet/components/Card';
+import Tiles from 'grommet/components/Tiles';
+import Header from 'grommet/components/Header';
+import Box from 'grommet/components/Box';
+import Search from 'grommet/components/Search';
 import Tabs from 'grommet/components/Tabs';
 import Tab from 'grommet/components/Tab';
 import Article from 'grommet/components/Article';
-import Header from 'grommet/components/Header';
 import Spinning from 'grommet/components/icons/Spinning';
 
 
@@ -28,7 +31,6 @@ const style = {
 ])
 @connect(({ firebase }) => ({
   quests: firebase.data.quests && fromJS(firebase.data.quests),
-  accepts: firebase.data.accepts && fromJS(firebase.data.accepts),
 }))
 class Dashboard extends React.Component {
   static propTypes = {
@@ -69,6 +71,28 @@ class Dashboard extends React.Component {
       <Article>
         <Header>
           <h2>Quests</h2>
+          <Box
+            flex
+            justify="end"
+            direction="row"
+            responsive={false}
+            margin={{
+              bottom: 'small',
+            }}
+          >
+            <Search
+              inline
+              fill
+              size="medium"
+              placeHolder="Search"
+              dropAlign={{ right: 'right' }}
+            />
+            <Button
+              primary
+              onClick={() => this.createQuest()}
+              label="Create Quest"
+            />
+          </Box>
         </Header>
         <Tabs
           justify="start"
@@ -77,48 +101,42 @@ class Dashboard extends React.Component {
             title="Created"
           >
             <div>
-              <Button
-                primary
-                onClick={() => this.createQuest()}
-                label="Create Quest"
-              />
-              <List>
+              <Tiles>
                 {createdQuests.count() === 0 &&
                   <p>You have no quests. Create one now.</p>
                 }
                 {createdQuests.map((quest, id) => (
-                  <ListItem
-                    key={id} // eslint-disable-line
-                    onClick={() => browserHistory.push(`/quests/${id}`)}
-                  >
-                    {quest.get('name')}
-                  </ListItem>
+                  <Tile>
+                    <Card
+                      key={id} // eslint-disable-line
+                      thumbnail={quest.get('thumbnail')}
+                      label={quest.get('name')}
+                      onClick={() => browserHistory.push(`/quests/${id}`)}
+                    />
+                  </Tile>
                 )).valueSeq()}
-              </List>
+              </Tiles>
             </div>
           </Tab>
           <Tab
             title="Accepted"
           >
             <div>
-              <Button
-                primary
-                onClick={() => this.createQuest()}
-                label="Create Quest"
-              />
-              <List>
+              <Tiles>
                 {acceptedQuests.count() === 0 &&
-                  <p>You have not accepted any quests!</p>
+                  <p>You have no quests. Create one now.</p>
                 }
                 {acceptedQuests.map((quest, id) => (
-                  <ListItem
-                    key={id} // eslint-disable-line
-                    onClick={() => browserHistory.push(`/quests/${id}`)}
-                  >
-                    {quest.get('name')}
-                  </ListItem>
+                  <Tile>
+                    <Card
+                      key={id} // eslint-disable-line
+                      thumbnail={quest.get('thumbnail')}
+                      label={quest.get('name')}
+                      onClick={() => browserHistory.push(`/quests/${id}`)}
+                    />
+                  </Tile>
                 )).valueSeq()}
-              </List>
+              </Tiles>
             </div>
           </Tab>
         </Tabs>
